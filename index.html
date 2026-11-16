@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Alle Marvel-Filme und -Serien von MCU, Sony und Fox auf einer Karte: Figuren, Gegenspieler, Artefakte und Handlungsstränge als Fäden durch die Titel.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2315172b'/%3E%3Cpath d='M5 23 12 9l4 8 4-8 7 14' fill='none' stroke='%23f2bd1d' stroke-width='3.5' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Marvel Zeitlinien-Atlas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: eine Comicseite. Panels = Phase x Studio, dazwischen Stege. Fäden laufen als Tuschelinien quer über die Panels. */
+:root{
+  --paper:#e6e9ef; --panel:#f5f6f9; --chip:#ffffff; --ink:#15172b; --ink2:#535872;
+  --dimbg:#eceef2; --dimink:#8f94a8;
+  --red:#d3262b; --yellow:#f2bd1d; --blue:#2450c4; --pink:#b3207f;
+  --on-red:#ffffff; --on-yellow:#15172b; --on-blue:#ffffff; --on-pink:#ffffff;
+  --space:#1f6fd6; --mind:#e3ad0c; --reality:#c81e2c; --power:#7b3fc9; --time:#1f9a55; --soul:#e8741a;
+  --on-space:#ffffff; --on-mind:#15172b; --on-reality:#ffffff; --on-power:#ffffff; --on-time:#ffffff; --on-soul:#15172b;
+  --dots:rgba(21,23,43,.17);
+  --f-display:"Anton","Haettenschweiler","Impact","Arial Narrow",sans-serif;
+  --f-cond:"Barlow Condensed","Arial Narrow","Segoe UI",sans-serif;
+  --f-body:"Barlow","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e0f20; --panel:#171932; --chip:#232647; --ink:#edebe2; --ink2:#a6aac4;
+    --dimbg:#15172d; --dimink:#62668a;
+    --red:#ff5d58; --yellow:#ffd044; --blue:#7397ff; --pink:#ff86cf;
+    --on-red:#190708; --on-yellow:#15172b; --on-blue:#0a1030; --on-pink:#2a0620;
+    --space:#5aa2ff; --mind:#ffd044; --reality:#ff5d62; --power:#b98bff; --time:#53d48a; --soul:#ff9d4d;
+    --on-space:#07142b; --on-mind:#15172b; --on-reality:#1c0608; --on-power:#150a2b; --on-time:#062014; --on-soul:#241003;
+    --dots:rgba(237,235,226,.11);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e0f20; --panel:#171932; --chip:#232647; --ink:#edebe2; --ink2:#a6aac4;
+  --dimbg:#15172d; --dimink:#62668a;
+  --red:#ff5d58; --yellow:#ffd044; --blue:#7397ff; --pink:#ff86cf;
+  --on-red:#190708; --on-yellow:#15172b; --on-blue:#0a1030; --on-pink:#2a0620;
+  --space:#5aa2ff; --mind:#ffd044; --reality:#ff5d62; --power:#b98bff; --time:#53d48a; --soul:#ff9d4d;
+  --on-space:#07142b; --on-mind:#15172b; --on-reality:#1c0608; --on-power:#150a2b; --on-time:#062014; --on-soul:#241003;
+  --dots:rgba(237,235,226,.11);
+  color-scheme:dark;
+}
+
+/* Farbschlüssel: jedes Element mit data-k bekommt seine Fadenfarbe */
+[data-k="c"]{--hl:var(--red);--hl-ink:var(--on-red)}
+[data-k="v"]{--hl:var(--pink);--hl-ink:var(--on-pink)}
+[data-k="a"]{--hl:var(--yellow);--hl-ink:var(--on-yellow)}
+[data-k="p"]{--hl:var(--blue);--hl-ink:var(--on-blue)}
+[data-k="space"]{--hl:var(--space);--hl-ink:var(--on-space)}
+[data-k="mind"]{--hl:var(--mind);--hl-ink:var(--on-mind)}
+[data-k="reality"]{--hl:var(--reality);--hl-ink:var(--on-reality)}
+[data-k="power"]{--hl:var(--power);--hl-ink:var(--on-power)}
+[data-k="time"]{--hl:var(--time);--hl-ink:var(--on-time)}
+[data-k="soul"]{--hl:var(--soul);--hl-ink:var(--on-soul)}
+[data-k="none"]{--hl:var(--ink);--hl-ink:var(--paper)}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--f-body)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 96px;display:flex;flex-direction:column;gap:26px}
+
+/* Kopf */
+.mast{position:relative;display:flex;flex-direction:column;gap:12px;padding-block:6px 4px}
+.mast::after{content:"";position:absolute;inset:-28px 0 0 45%;background-image:radial-gradient(var(--dots) 1.4px,transparent 1.8px);background-size:10px 10px;-webkit-mask-image:linear-gradient(100deg,transparent 5%,#000 90%);mask-image:linear-gradient(100deg,transparent 5%,#000 90%);pointer-events:none}
+.kicker{margin:0;font:600 13px/1.2 var(--f-cond);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+h1{margin:0;font:400 clamp(44px,8.2vw,104px)/.92 var(--f-display);text-transform:uppercase;letter-spacing:.005em;text-shadow:.04em .04em 0 var(--red);text-wrap:balance;position:relative;z-index:1}
+.lede{margin:0;max-width:64ch;font-size:17px;position:relative;z-index:1}
+.legend{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font:600 14px/1.2 var(--f-cond);letter-spacing:.04em;position:relative;z-index:1}
+.legend li{display:flex;align-items:center;gap:7px}
+.legend i{width:14px;height:14px;border:1.5px solid var(--ink);background:var(--hl)}
+.legend i.soon{background:transparent;border-style:dashed}
+
+/* Fadenwahl */
+.picker{display:flex;flex-direction:column;gap:12px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tabs{display:flex;max-width:100%;overflow-x:auto;border:1.5px solid var(--ink)}
+.tabs button{flex:none;white-space:nowrap;border:0;background:var(--chip);padding:8px 14px;font:600 15px/1 var(--f-cond);letter-spacing:.06em;text-transform:uppercase}
+.tabs button+button{border-left:1.5px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.search{flex:1 1 180px;max-width:280px;min-width:0;border:1.5px solid var(--ink);background:var(--chip);padding:7px 10px;font:500 15px/1.2 var(--f-cond);letter-spacing:.02em;border-radius:0}
+.search::placeholder{color:var(--ink2)}
+.ghost{border:1.5px solid var(--ink);background:transparent;padding:7px 12px;font:600 14px/1.2 var(--f-cond);letter-spacing:.06em;text-transform:uppercase}
+.ghost:hover{background:var(--ink);color:var(--paper)}
+.tlist{display:flex;flex-wrap:wrap;gap:7px}
+.tbtn{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--ink);background:var(--chip);padding:5px 10px 5px 7px;font:600 15px/1.15 var(--f-cond);letter-spacing:.01em;text-align:left}
+.tbtn i{flex:none;width:11px;height:11px;background:var(--hl);border:1.5px solid var(--ink)}
+.tbtn small{font:500 12px/1 var(--f-cond);color:var(--ink2);font-variant-numeric:tabular-nums}
+.tbtn:hover{box-shadow:2px 2px 0 var(--ink);transform:translate(-1px,-1px)}
+.tbtn.act{background:var(--hl);color:var(--hl-ink);box-shadow:3px 3px 0 var(--ink);transform:translate(-1px,-1px)}
+.tbtn.act small{color:inherit;opacity:.75}
+.tbtn.act i{background:var(--hl-ink)}
+
+/* Karte */
+.stage{display:block}
+.mapscroll{overflow-x:auto;min-width:0;margin-inline:-4px;padding:4px}
+.map{position:relative;display:grid;grid-template-columns:104px 1.05fr 1fr 1fr 1.55fr 1.6fr 1.4fr 1.1fr;gap:8px;min-width:1140px;padding:4px 6px 10px 0}
+#wires{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:visible}
+#wires path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.wu{stroke:var(--ink);stroke-width:7.5}
+.wt{stroke:var(--hl);stroke-width:4}
+.win{stroke:var(--blue);stroke-width:2.5}
+.wout{stroke:var(--red);stroke-width:2.5}
+.an{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.1s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.an{animation:none;stroke-dasharray:none;stroke-dashoffset:0}}
+
+.saga{background:var(--ink);color:var(--paper);font:400 17px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;padding:7px 10px}
+.saga.none{background:transparent}
+.era{display:flex;flex-direction:column;gap:1px;padding:2px 2px 0}
+.era b{font:400 21px/1 var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+.era span{font:600 13px/1.2 var(--f-cond);letter-spacing:.08em;color:var(--ink2);font-variant-numeric:tabular-nums}
+.lane{position:sticky;left:0;z-index:3;background:var(--paper);display:flex;flex-direction:column;gap:4px;padding:8px 8px 8px 0;min-width:0}
+.lane b{font:400 17px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em;overflow-wrap:anywhere}
+.lane span{font:500 12.5px/1.25 var(--f-cond);color:var(--ink2);letter-spacing:.02em}
+.cell{background:var(--panel);border:1.5px solid var(--ink);padding:9px;display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;align-items:flex-start;min-width:0}
+.cell.note{background:transparent;border-style:dashed;border-color:var(--dimink);color:var(--ink2);font:500 14.5px/1.35 var(--f-cond);align-content:center;padding:12px}
+
+.chip{position:relative;z-index:2;max-width:100%;border:1.5px solid var(--ink);background:var(--chip);color:var(--ink);padding:3px 6px;font:600 14px/1.15 var(--f-cond);letter-spacing:.005em;text-align:left;overflow-wrap:anywhere}
+.chip small{font:500 11.5px/1 var(--f-cond);letter-spacing:.03em;opacity:.72;white-space:nowrap;margin-left:2px}
+.chip.soon{border-style:dashed}
+.chip:hover{box-shadow:2px 2px 0 var(--ink);transform:translate(-1px,-1px)}
+.map.dim .chip:not(.on):not(.sel):not(.in):not(.out),
+.map.searching .chip.miss{background:var(--dimbg);color:var(--dimink);border-color:var(--dimink)}
+.chip.on{background:var(--hl);color:var(--hl-ink);box-shadow:3px 3px 0 var(--ink);transform:translate(-1px,-1px)}
+.chip.sel{background:var(--ink);color:var(--paper);box-shadow:3px 3px 0 var(--yellow);transform:translate(-1px,-1px)}
+.chip.in{border-color:var(--blue);box-shadow:3px 3px 0 var(--blue)}
+.chip.out{border-color:var(--red);box-shadow:3px 3px 0 var(--red)}
+.map.searching .chip.hit{outline:3px solid var(--yellow);outline-offset:1px}
+.step{position:absolute;top:-9px;left:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--ink);color:var(--paper);font:700 11px/18px var(--f-cond);text-align:center;font-variant-numeric:tabular-nums}
+
+/* Inspektor */
+.insp{background:var(--panel);border:2px solid var(--ink);display:flex;flex-direction:column;min-width:0}
+.insp-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:14px 16px 12px;border-bottom:2px solid var(--ink);background:var(--hl);color:var(--hl-ink)}
+.insp-head .kicker{color:inherit;opacity:.85}
+.insp-head h2{margin:3px 0 0;font:400 26px/1.02 var(--f-display);text-transform:uppercase;letter-spacing:.015em;text-wrap:balance}
+.toggle{flex:none;border:1.5px solid currentColor;background:transparent;color:inherit;padding:5px 9px;font:600 13px/1 var(--f-cond);letter-spacing:.08em;text-transform:uppercase}
+.insp-body{padding:14px 16px 18px;display:flex;flex-direction:column;gap:12px;overflow:auto;min-width:0}
+.insp-body p{margin:0;max-width:65ch}
+.insp-body .de{font:500 14px/1.3 var(--f-cond);color:var(--ink2);letter-spacing:.02em}
+.insp-body h3{margin:6px 0 0;font:600 13px/1.2 var(--f-cond);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);display:flex;align-items:center;gap:7px}
+.insp-body h3 i{width:12px;height:12px;border:1.5px solid var(--ink)}
+.insp-body h3.hin i{background:var(--blue)} .insp-body h3.hout i{background:var(--red)}
+.stops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.stops li{position:relative;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;padding-bottom:12px}
+.stops li::before{content:"";position:absolute;left:11.5px;top:22px;bottom:-2px;width:3px;background:var(--hl)}
+.stops li:last-child::before{display:none}
+.stops .num{width:26px;height:26px;border-radius:13px;background:var(--hl);color:var(--hl-ink);border:1.5px solid var(--ink);font:700 13px/23px var(--f-cond);text-align:center;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+.stops .what{display:flex;flex-direction:column;gap:2px;min-width:0;padding-top:1px}
+.stops .what span{font-size:14.5px;line-height:1.4}
+.tchip{align-self:flex-start;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:0 0 1px;font:600 16.5px/1.2 var(--f-cond);text-align:left}
+.tchip small{font:500 12.5px/1 var(--f-cond);color:var(--ink2);margin-left:4px}
+.tchip:hover{background:var(--ink);color:var(--paper)} .tchip:hover small{color:inherit}
+.tl,.nb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tl li,.nb li{display:flex;flex-direction:column;gap:1px;min-width:0}
+.tl span,.nb span{font-size:14px;line-height:1.4;color:var(--ink2)}
+.nb>li{gap:6px}
+.via{list-style:none;margin:0;padding:0 0 0 12px;border-left:3px solid var(--dimbg);display:flex;flex-direction:column;gap:8px}
+.via .tlink{font-size:15px}
+.via span b{font-weight:600;color:var(--ink)}
+.tlink{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;padding:0;font:600 16px/1.2 var(--f-cond);text-align:left}
+.tlink i{flex:none;width:11px;height:11px;background:var(--hl);border:1.5px solid var(--ink)}
+.tlink b{font-weight:600;border-bottom:1.5px solid var(--ink)}
+.tlink:hover b{background:var(--ink);color:var(--paper)}
+.sugg{display:flex;flex-wrap:wrap;gap:7px}
+
+/* Erscheinungen */
+.looks{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+.look{margin:0;border:1.5px solid var(--ink);background:var(--chip);display:flex;flex-direction:column;min-width:0}
+.look img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 18%;border-bottom:1.5px solid var(--ink);background:var(--dimbg)}
+.look figcaption{padding:6px 8px 8px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.look b{font:600 15px/1.15 var(--f-cond)}
+.look span{font:500 13px/1.2 var(--f-cond);color:var(--ink2)}
+.look small{font:500 10.5px/1.25 var(--f-cond);color:var(--ink2);overflow-wrap:anywhere}
+.ext{font:600 13.5px/1.25 var(--f-cond);color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.ext:hover{background:var(--ink);color:var(--paper)}
+.morelooks{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px 14px}
+.av{flex:none;width:22px;height:22px;object-fit:cover;object-position:50% 18%;border:1.5px solid var(--ink);background:var(--dimbg)}
+.credits{border:1.5px solid var(--ink);background:var(--panel);padding:10px 14px;max-width:90ch}
+.credits summary{cursor:pointer;font:600 15px/1.3 var(--f-cond);letter-spacing:.06em;text-transform:uppercase}
+.credits ul{margin:10px 0 0;padding:0;list-style:none;columns:2 300px;column-gap:24px;font:500 13px/1.35 var(--f-cond);color:var(--ink2)}
+.credits li{break-inside:avoid;margin-bottom:5px;overflow-wrap:anywhere}
+.credits a{color:var(--ink)}
+
+/* Infinity-Steine */
+.sect{display:flex;flex-direction:column;gap:10px}
+.sect h2{margin:0;font:400 clamp(28px,4vw,40px)/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.sect>p{margin:0;max-width:65ch}
+.tablescroll{overflow-x:auto;border:1.5px solid var(--ink);background:var(--panel)}
+table.st{border-collapse:collapse;min-width:720px;width:100%}
+.st th,.st td{padding:0}
+.st thead th{vertical-align:bottom;padding:10px 0 8px;border-bottom:1.5px solid var(--ink)}
+.st thead th span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font:600 13.5px/1 var(--f-cond);letter-spacing:.02em}
+.st thead th small{display:block;margin-top:6px;font:500 11.5px/1 var(--f-cond);color:var(--ink2);font-variant-numeric:tabular-nums}
+.st tbody th{position:sticky;left:0;z-index:1;background:var(--panel);text-align:left;padding:7px 12px 7px 10px;border-right:1.5px solid var(--ink)}
+.st tbody tr+tr th,.st tbody tr+tr td{border-top:1px dashed var(--dimink)}
+.sbtn{display:flex;align-items:center;gap:9px;border:0;background:transparent;padding:2px 0;text-align:left;font:600 16px/1.15 var(--f-cond)}
+.sbtn small{display:block;font:500 12.5px/1.2 var(--f-cond);color:var(--ink2)}
+.sbtn:hover b{border-bottom:1.5px solid var(--ink)}
+.gem{flex:none;display:block;width:13px;height:13px;transform:rotate(45deg);background:var(--hl);border:1.5px solid var(--ink)}
+.st td{height:44px;min-width:38px;text-align:center}
+.st td .gem{margin:0 auto;position:relative}
+.st td.f{background:linear-gradient(var(--hl),var(--hl)) right center/50% 3px no-repeat}
+.st td.m{background:linear-gradient(var(--hl),var(--hl)) center/100% 3px no-repeat}
+.st td.l{background:linear-gradient(var(--hl),var(--hl)) left center/50% 3px no-repeat}
+
+.foot{font:500 14px/1.45 var(--f-cond);color:var(--ink2);letter-spacing:.02em;max-width:90ch;margin:0}
+
+/* schmal: Inspektor als Leiste unten */
+@media (max-width:1579.98px){
+  .insp{position:fixed;left:0;right:0;bottom:0;z-index:20;max-height:58vh;border-width:2px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .insp-head{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:9px 8px;align-items:center}
+  .insp-head h2{font-size:19px}
+  .insp-body{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .insp.closed .insp-body{display:none}
+}
+@media (min-width:1580px){
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:22px;align-items:start}
+  .insp{position:sticky;top:12px;max-height:calc(100vh - 24px);box-shadow:5px 5px 0 var(--ink)}
+  .toggle{display:none}
+  .wrap{padding-block:28px 48px}
+}
+@media (max-width:640px){
+  .map{grid-template-columns:84px 1.05fr 1fr 1fr 1.55fr 1.6fr 1.4fr 1.1fr;min-width:1080px}
+  .lane b{font-size:14.5px}
+  .tlist{flex-wrap:nowrap;overflow-x:auto;margin-inline:-4px;padding:4px 4px 8px}
+  .tbtn{flex:none;white-space:nowrap}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app" data-k="space">
+
+  <header class="mast">
+    <p class="kicker">Inoffizielle Fan-Übersicht · Stand November 2026 · enthält Spoiler</p>
+    <h1>Marvel Zeitlinien-Atlas</h1>
+    <p class="lede">Alle Filme und Serien von Marvel Studios, Marvel Television, Sony und Fox auf einer Karte. Wähle eine Figur, einen Gegenspieler, ein Artefakt oder einen Handlungsstrang, und die Linie zeigt dir den Weg durch die Titel. Ein Klick auf einen Titel zeigt, welche Fäden durch ihn laufen, wo sie vorher waren und wo sie danach wieder auftauchen.</p>
+    <ul class="legend" aria-label="Legende">
+      <li data-k="c"><i></i>Figur</li>
+      <li data-k="v"><i></i>Gegenspieler</li>
+      <li data-k="a"><i></i>Artefakt &amp; Technik</li>
+      <li data-k="p"><i></i>Handlung &amp; Orte</li>
+      <li><i class="soon"></i>angekündigt</li>
+    </ul>
+  </header>
+
+  <section class="picker" aria-label="Faden wählen">
+    <div class="bar">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <input class="search" id="q" type="search" placeholder="Titel suchen, z. B. Loki" aria-label="Titel auf der Karte suchen" autocomplete="off">
+      <button type="button" class="ghost" id="clear">Auswahl aufheben</button>
+    </div>
+    <div class="tlist" id="tlist"></div>
+  </section>
+
+  <div class="stage">
+    <div class="mapscroll" id="mapscroll">
+      <div class="map dim" id="map"><svg id="wires" aria-hidden="true"></svg></div>
+    </div>
+    <aside class="insp closed" id="insp" aria-live="polite">
+      <div class="insp-head" id="inspHead"></div>
+      <div class="insp-body" id="inspBody"></div>
+    </aside>
+  </div>
+
+  <section class="sect" id="steine">
+    <h2>Die sechs Infinity-Steine</h2>
+    <p>Jede Zeile ist ein Stein, jede Spalte ein Titel in Erscheinungsreihenfolge. Die Linie zeigt, über welche Stationen der Stein wandert. Ein Klick auf den Namen legt den Weg auf die Karte.</p>
+    <div class="tablescroll"><table class="st" id="stones"></table></div>
+  </section>
+
+  <details class="credits" id="credits"></details>
+
+  <p class="foot">Fan-Übersicht ohne Verbindung zu Marvel, Disney oder Sony. Die Fotos stammen von Wikimedia Commons und zeigen Darsteller, Cosplay und Nachbauten, keine Filmszenen. Die Links „Filmbilder“ öffnen eine Bildersuche in einem neuen Tab. Spalten folgen dem Erscheinungsdatum, nicht der Chronologie innerhalb der Handlung. Stand: 16. November 2026. Angaben zu Titeln ab Sommer 2026 beruhen auf offiziellen Ankündigungen und Inhaltsangaben, Details können abweichen.</p>
+</div>
+
+<script>
+/* ---------- Daten ---------- */
+const ERAS=[
+ {k:"Davor",y:"1986–2007"},{k:"Phase 1",y:"2008–2012"},{k:"Phase 2",y:"2013–2015"},{k:"Phase 3",y:"2016–2020"},
+ {k:"Phase 4",y:"2021–2022"},{k:"Phase 5",y:"2023–2025"},{k:"Phase 6",y:"2025–2027"}];
+const LANES=[
+ {id:"F",n:"MCU Kinofilme",s:"Marvel Studios · Erde-616"},
+ {id:"S",n:"Serien & Specials",s:"ABC · Netflix · Disney+"},
+ {id:"Y",n:"Sony Spider-Man",s:"Raimi · Webb · SSU · Spider-Verse"},
+ {id:"X",n:"Fox & frühe Filme",s:"X-Men · Deadpool · Fantastic Four"}];
+const SPANS={
+ F:{0:[1,"Das MCU beginnt 2008 mit Iron Man."]},
+ S:{0:[1,"Serien im gemeinsamen Universum gibt es erst ab 2013."]},
+ X:{4:[3,"2019 übernimmt Disney 21st Century Fox. Die Figuren leben im MCU weiter: Multiverse of Madness, Deadpool & Wolverine, Avengers: Doomsday."]}};
+
+// [id, Reihe, Datum (Jahr.Monat), Name, Marke, Inhalt, Optionen]
+const TT=[
+// MCU Kinofilme
+["im1","F",2008.05,"Iron Man","","Tony Stark baut in Gefangenschaft seine erste Rüstung und outet sich öffentlich als Iron Man. Im Abspann spricht ihn Nick Fury auf die Avengers-Initiative an."],
+["hulk","F",2008.06,"The Incredible Hulk","","Bruce Banner ist auf der Flucht vor General Ross und stellt sich in Harlem dem Abomination. Am Ende sucht Tony Stark Ross wegen eines Teams auf.",{de:"Der unglaubliche Hulk"}],
+["im2","F",2010.05,"Iron Man 2","","Der Reaktor in Tonys Brust vergiftet ihn, während Ivan Vanko und Justin Hammer seine Technik kopieren. Black Widow und War Machine treten auf. Im Abspann findet S.H.I.E.L.D. einen Hammer in New Mexico."],
+["thor","F",2011.04,"Thor","","Odin verbannt seinen Sohn Thor ohne Kräfte auf die Erde. Sein Bruder Loki erfährt, dass er ein Eisriese ist, und greift nach Asgards Thron."],
+["cap1","F",2011.07,"Captain America: The First Avenger","","1943 wird Steve Rogers zum Supersoldaten und bekämpft Red Skull, der mit dem Tesserakt Waffen für Hydra baut. Bucky stürzt in den Tod, Steve friert im Eis ein und erwacht in der Gegenwart.",{sn:"Captain America: The First Avenger"}],
+["av1","F",2012.05,"The Avengers","","Loki stiehlt den Tesserakt und öffnet über New York ein Portal für die Chitauri. Iron Man, Cap, Thor, Hulk, Black Widow und Hawkeye werden zum Team. Im Abspann zeigt sich Lokis Auftraggeber: Thanos."],
+["im3","F",2013.05,"Iron Man 3","","Nach New York leidet Tony unter Panikattacken. Hinter dem Terroristen „Mandarin“ steckt der Schauspieler Trevor Slattery, hinter ihm Aldrich Killian und sein Extremis-Virus."],
+["thor2","F",2013.11,"Thor: The Dark World","","Der Dunkelelf Malekith will mit dem Äther das Universum verdunkeln. Thors Mutter Frigga stirbt, Loki täuscht seinen Tod vor und setzt sich als Odin auf den Thron.",{de:"Thor – The Dark Kingdom"}],
+["cap2","F",2014.04,"Captain America: The Winter Soldier","","Steve entdeckt, dass Hydra S.H.I.E.L.D. seit Jahrzehnten unterwandert hat. Der Attentäter Winter Soldier ist sein Freund Bucky. S.H.I.E.L.D. zerfällt.",{de:"The Return of the First Avenger"}],
+["gotg1","F",2014.08,"Guardians of the Galaxy","","Peter Quill, Gamora, Drax, Rocket und Groot raufen sich zusammen und halten den Kree-Fanatiker Ronan davon ab, mit dem Machtstein den Planeten Xandar auszulöschen."],
+["av2","F",2015.05,"Avengers: Age of Ultron","","Tony und Bruce erschaffen mit dem Stein aus Lokis Zepter die KI Ultron, die die Menschheit vernichten will. Wanda und Pietro Maximoff wechseln die Seite, Vision entsteht, Sokovia fällt vom Himmel."],
+["ant1","F",2015.07,"Ant-Man","","Der Einbrecher Scott Lang übernimmt von Hank Pym den Schrumpfanzug und verhindert, dass die Technik an Hydra verkauft wird. Das Quantenreich wird eingeführt."],
+["cap3","F",2016.05,"Captain America: Civil War","","Das Sokovia-Abkommen soll die Avengers unter UN-Aufsicht stellen und spaltet das Team in zwei Lager. Zemo treibt Tony und Steve gegeneinander. Black Panther und Spider-Man haben ihren ersten Auftritt.",{de:"The First Avenger: Civil War"}],
+["ds1","F",2016.11,"Doctor Strange","","Der Chirurg Stephen Strange wird nach einem Unfall zum Zauberer. Mit dem Auge von Agamotto hält er Dormammu in einer Zeitschleife fest. Das Multiversum wird erstmals erwähnt."],
+["gotg2","F",2017.05,"Guardians of the Galaxy Vol. 2","","Peter Quill trifft seinen Vater Ego, einen Celestial, der das Universum in sich selbst verwandeln will. Yondu opfert sich, Mantis und Nebula stoßen zum Team."],
+["smh","F",2017.07,"Spider-Man: Homecoming","","Peter Parker will Tony Stark beweisen, dass er ein Avenger sein kann. Sein Gegner Adrian Toomes, der Vulture, handelt mit Waffen aus Chitauri-Schrott der Schlacht von New York."],
+["thor3","F",2017.11,"Thor: Ragnarok","","Odins Erstgeborene Hela zerstört Mjölnir und erobert Asgard. Thor trifft auf dem Müllplaneten Sakaar den Hulk und muss Asgard untergehen lassen, um sein Volk zu retten.",{de:"Thor: Tag der Entscheidung"}],
+["bp1","F",2018.02,"Black Panther","","T'Challa wird König von Wakanda. Sein Cousin Erik Killmonger will das Vibranium des Landes als Waffe in die Welt tragen. Am Ende öffnet sich Wakanda."],
+["iw","F",2018.04,"Avengers: Infinity War","","Thanos sammelt alle sechs Infinity-Steine. Die Avengers und die Guardians können ihn nicht aufhalten: Mit einem Fingerschnippen löscht er die Hälfte allen Lebens aus."],
+["ant2","F",2018.07,"Ant-Man and the Wasp","","Scott, Hope und Hank holen Janet van Dyne nach 30 Jahren aus dem Quantenreich. Im Abspann zerfallen die Pyms, Scott steckt im Quantenreich fest."],
+["cm","F",2019.03,"Captain Marvel","","1995: Die Kree-Soldatin Vers erfährt, dass sie die Pilotin Carol Danvers ist. Ihre Kräfte stammen aus einem Antrieb, der vom Tesserakt gespeist wurde. Der junge Nick Fury entwirft die Avengers-Initiative."],
+["eg","F",2019.04,"Avengers: Endgame","","Fünf Jahre nach dem Snap reisen die Avengers durch das Quantenreich in die Vergangenheit und holen die Steine. Alle Verschwundenen kehren zurück. Tony und Natasha sterben, Steve gibt den Schild an Sam weiter."],
+["ffh","F",2019.07,"Spider-Man: Far From Home","","Auf Klassenfahrt in Europa fällt Peter auf Quentin Beck herein, der sich mit Drohnen und Illusionen als Held Mysterio inszeniert. Im Abspann wird Peters Identität enthüllt."],
+["bw","F",2021.07,"Black Widow","","Spielt direkt nach Civil War: Natasha zerschlägt mit ihrer Ziehfamilie den Roten Raum. Im Abspann hetzt Valentina de Fontaine ihre Schwester Yelena auf Hawkeye."],
+["sc","F",2021.09,"Shang-Chi and the Legend of the Ten Rings","","Shang-Chi stellt sich seinem Vater Wenwu, dem wahren Mandarin, und erbt die Zehn Ringe. Im Abspann untersuchen Wong, Bruce Banner und Carol Danvers die Ringe, die ein Signal senden.",{sn:"Shang-Chi"}],
+["et","F",2021.11,"Eternals","","Die unsterblichen Eternals erfahren, dass die Erde das Ei eines Celestials ist. Sie verhindern die Geburt von Tiamut, dessen versteinerter Körper seitdem aus dem Ozean ragt."],
+["nwh","F",2021.12,"Spider-Man: No Way Home","","Ein Zauber von Doctor Strange soll Peters Identität wieder geheim machen und holt stattdessen Schurken und zwei weitere Spider-Men aus anderen Universen. Am Ende vergisst die ganze Welt Peter Parker."],
+["mom","F",2022.05,"Doctor Strange in the Multiverse of Madness","","Wanda, vom Darkhold verdorben, jagt die Universen-Springerin America Chavez. Strange trifft auf Erde-838 die Illuminati und lernt, was Inkursionen sind: Zusammenstöße ganzer Universen.",{sn:"Doctor Strange in the Multiverse of Madness"}],
+["thor4","F",2022.07,"Thor: Love and Thunder","","Gorr der Götterschlächter tötet Götter. Jane Foster schwingt als Mighty Thor den neu zusammengesetzten Mjölnir und stirbt an ihrer Krankheit. Thor zieht Gorrs Tochter Love groß."],
+["bp2","F",2022.11,"Black Panther: Wakanda Forever","","Nach T'Challas Tod wird Wakanda vom Unterwasserreich Talokan und dessen König Namor bedroht. Shuri wird zum neuen Black Panther, Riri Williams tritt zum ersten Mal auf."],
+["ant3","F",2023.02,"Ant-Man and the Wasp: Quantumania","","Scott, Hope und Cassie werden ins Quantenreich gesogen und treffen den dorthin verbannten Kang den Eroberer. Im Abspann versammelt sich ein Rat aus unzähligen Kang-Varianten.",{sn:"Ant-Man: Quantumania"}],
+["gotg3","F",2023.05,"Guardians of the Galaxy Vol. 3","","Rockets Vergangenheit als Experiment des High Evolutionary holt das Team ein. Die Guardians retten ihn und gehen danach getrennte Wege."],
+["marvels","F",2023.11,"The Marvels","","Carol Danvers, Monica Rambeau und Kamala Khan tauschen bei jedem Krafteinsatz die Plätze. Im Abspann strandet Monica in einem Universum mit den X-Men, Kamala wirbt Kate Bishop an."],
+["dw","F",2024.07,"Deadpool & Wolverine","","Die TVA will Deadpools Universum abschalten, weil dessen Logan tot ist. Wade holt einen Wolverine aus einer anderen Welt, beide landen in der Leere bei Cassandra Nova und vergessenen Fox-Helden."],
+["cap4","F",2025.02,"Captain America: Brave New World","","Sam Wilson gerät als Captain America in eine Intrige um Adamantium auf der Celestial-Insel. Dahinter steckt Samuel Sterns, der Präsident Ross zum Red Hulk macht."],
+["tb","F",2025.05,"Thunderbolts*","","Yelena, Bucky, Red Guardian, Ghost und John Walker werden von Valentina de Fontaine verheizt und stellen sich Bob, dem übermächtigen Sentry. Am Ende heißen sie New Avengers. Im Abspann nähert sich ein Schiff der Fantastic Four."],
+["ff","F",2025.07,"The Fantastic Four: First Steps","","Auf der Retro-Erde-828 verteidigen Reed, Sue, Johnny und Ben ihre Welt gegen Galactus, der es auf den neugeborenen Franklin Richards abgesehen hat. Im Abspann steht Doctor Doom an Franklins Seite."],
+["bnd","F",2026.07,"Spider-Man: Brand New Day","","Laut offizieller Inhaltsangabe: Peter lebt allein in einer Welt, die ihn vergessen hat, und ist rund um die Uhr Spider-Man. Eine Veränderung in ihm droht außer Kontrolle zu geraten. Mit dabei: Punisher, Bruce Banner und Scorpion."],
+["dd","F",2026.12,"Avengers: Doomsday","","Kinostart 18. Dezember 2026. Avengers, New Avengers, Fantastic Four und die X-Men der Fox-Filme treffen auf Doctor Doom, gespielt von Robert Downey Jr.",{soon:1}],
+["sw","F",2027.12,"Avengers: Secret Wars","","Kinostart Dezember 2027. Abschluss der Multiversums-Saga.",{soon:1}],
+// Serien & Specials
+["aos","S",2013.09,"Agents of S.H.I.E.L.D.","ABC","Phil Coulson lebt und leitet ein kleines Team. Die Serie reagiert direkt auf den Hydra-Verrat aus The Winter Soldier und erzählt später von Inhumans, Kree, dem Darkhold und Zeitreisen. Der Kanon-Status ist umstritten.",{yl:"2013–20"}],
+["ac","S",2015.01,"Agent Carter","ABC","Peggy Carter arbeitet nach dem Krieg bei der SSR, räumt mit Howard Starks Butler Jarvis dessen Erfindungen hinterher und legt den Grundstein für S.H.I.E.L.D.",{yl:"2015–16"}],
+["dd1","S",2015.04,"Daredevil","Netflix","Der blinde Anwalt Matt Murdock kämpft nachts in Hell's Kitchen gegen den Gangsterboss Wilson Fisk. Staffel 2 führt Punisher und Elektra ein, Staffel 3 Bullseye.",{yl:"2015–18"}],
+["jj","S",2015.11,"Jessica Jones","Netflix","Die Privatdetektivin mit Superkräften stellt sich ihrem Peiniger Kilgrave. Luke Cage hat hier seinen ersten Auftritt.",{yl:"2015–19"}],
+["lc","S",2016.09,"Luke Cage","Netflix","Der kugelsichere Luke Cage verteidigt Harlem gegen Cottonmouth, Mariah Dillard und Bushmaster.",{yl:"2016–18"}],
+["ifist","S",2017.03,"Iron Fist","Netflix","Danny Rand kehrt aus der mystischen Stadt K'un-Lun zurück und kämpft gegen den Ninja-Kult „Die Hand“.",{yl:"2017–18"}],
+["def","S",2017.08,"The Defenders","Netflix","Daredevil, Jessica Jones, Luke Cage und Iron Fist verbünden sich gegen die Hand und eine wiedererweckte Elektra. Matt gilt danach als tot."],
+["inh","S",2017.09,"Inhumans","ABC","Die Königsfamilie der Inhumans um den stummen Black Bolt wird durch einen Putsch vom Mond nach Hawaii vertrieben."],
+["pun","S",2017.11,"The Punisher","Netflix","Frank Castle deckt die Verschwörung hinter dem Mord an seiner Familie auf.",{yl:"2017–19"}],
+["run","S",2017.111,"Runaways","Hulu","Sechs Teenager entdecken, dass ihre Eltern den Verbrecherbund Pride bilden. Staffel 3 dreht sich um Morgan le Fay und das Darkhold, Cloak & Dagger schauen vorbei.",{yl:"2017–19"}],
+["cd","S",2018.06,"Cloak & Dagger","Freeform","Tandy und Tyrone bekommen durch die Explosion einer Roxxon-Bohrinsel vor New Orleans Kräfte aus Licht und Dunkelheit.",{yl:"2018–19"}],
+["wv","S",2021.01,"WandaVision","Disney+","Wanda Maximoff erschafft aus Trauer in der Kleinstadt Westview eine Sitcom-Welt mit Vision und Zwillingen. Die Hexe Agatha Harkness enthüllt, dass Wanda die Scarlet Witch ist."],
+["fws","S",2021.03,"The Falcon and the Winter Soldier","Disney+","Sam Wilson und Bucky Barnes jagen die Flag Smashers. Die Regierung macht John Walker zum Captain America, bis Sam den Schild selbst annimmt.",{sn:"Falcon and the Winter Soldier"}],
+["loki1","S",2021.06,"Loki · Staffel 1","Disney+","Der Loki von 2012 wird von der Zeitbehörde TVA gefasst. Mit seiner Variante Sylvie findet er am Ende der Zeit Jenen der bleibt. Sylvie tötet ihn, das Multiversum bricht auf."],
+["wi","S",2021.08,"What If…?","Animation","Der Watcher zeigt Zeitlinien, in denen etwas anders lief: Peggy wird Captain Carter, Strange zerstört sein Universum, Ultron gewinnt. Drei Staffeln.",{yl:"2021–24"}],
+["hawk","S",2021.115,"Hawkeye","Disney+","Clint Barton will Weihnachten nach Hause und muss mit Kate Bishop seine Zeit als Killer Ronin aufarbeiten. Yelena Belova jagt ihn, im Hintergrund zieht der Kingpin die Fäden."],
+["mk","S",2022.03,"Moon Knight","Disney+","Steven Grant und Marc Spector teilen sich einen Körper und dienen dem Mondgott Khonshu. Steht weitgehend für sich."],
+["msm","S",2022.06,"Ms. Marvel","Disney+","Die Schülerin Kamala Khan aus Jersey City bekommt durch einen Armreif Kräfte. Am Ende heißt es, in ihren Genen stecke eine „Mutation“."],
+["groot","S",2022.08,"I Am Groot","Animation","Kurzfilme über Baby Groot.",{yl:"2022–23"}],
+["shulk","S",2022.081,"She-Hulk","Disney+","Jennifer Walters, Cousine von Bruce Banner, wird zur Hulk und arbeitet als Anwältin für Superwesen. Wong, Abomination und Daredevil sind Mandanten oder Kollegen."],
+["wbn","S",2022.10,"Werewolf by Night","Special","Schwarzweiß-Special: Monsterjäger wetteifern um den Blutstein, unter ihnen der Werwolf Jack Russell und Elsa Bloodstone."],
+["ghs","S",2022.115,"Guardians Holiday Special","Special","Mantis und Drax entführen Kevin Bacon als Weihnachtsgeschenk für Peter. Mantis verrät, dass sie seine Halbschwester ist."],
+["si","S",2023.065,"Secret Invasion","Disney+","Nick Fury kehrt zurück, weil eine Skrull-Fraktion unter Gravik die Erde unterwandert. James Rhodes entpuppt sich als ausgetauscht."],
+["loki2","S",2023.10,"Loki · Staffel 2","Disney+","Der Zeitwebstuhl der TVA droht zu bersten. Loki lernt, die Zeit zu beherrschen, und hält am Ende alle Zeitlinien selbst zusammen."],
+["echo","S",2024.01,"Echo","Disney+","Maya Lopez flieht nach ihrem Schuss auf den Kingpin in ihre Heimat Oklahoma und findet die Kräfte ihrer Choctaw-Ahninnen."],
+["xm97","S",2024.03,"X-Men '97","Animation","Fortsetzung der Zeichentrickserie der 90er, in eigener Kontinuität außerhalb des MCU. Magneto übernimmt die Schule, Genosha wird zerstört.",{yl:"2024–"}],
+["agatha","S",2024.09,"Agatha All Along","Disney+","Agatha Harkness geht ohne Kräfte den Hexenpfad. Ihr junger Begleiter entpuppt sich als Wandas Sohn Billy. Agatha stirbt und bleibt als Geist."],
+["yfn","S",2025.01,"Your Friendly Neighborhood Spider-Man","Animation","Zeichentrick in einer abgezweigten Zeitlinie: Nicht Tony Stark, sondern Norman Osborn wird Peters Mentor.",{yl:"2025–",sn:"Friendly Neighborhood Spider-Man"}],
+["dba1","S",2025.03,"Daredevil: Born Again · Staffel 1","Disney+","Nach Foggy Nelsons Tod legt Matt die Maske ab. Wilson Fisk wird Bürgermeister von New York und lässt eine Sondereinheit Jagd auf Maskierte machen.",{sn:"Daredevil: Born Again 1"}],
+["ih","S",2025.06,"Ironheart","Disney+","Riri Williams baut in Chicago ihre eigene Rüstung, gerät an The Hood und macht einen Pakt mit Mephisto."],
+["eow","S",2025.08,"Eyes of Wakanda","Animation","Anthologie: Wakandas Agenten holen über Jahrhunderte gestohlene Vibranium-Artefakte zurück."],
+["mz","S",2025.09,"Marvel Zombies","Animation","Fortsetzung der Zombie-Folge aus What If…?: Kamala Khan, Shang-Chi und Yelena schlagen sich durch eine verseuchte Welt."],
+["wm","S",2026.01,"Wonder Man","Disney+","Hollywood-Satire: Der Schauspieler Simon Williams verheimlicht seine Kräfte und will die Hauptrolle im Remake von „Wonder Man“. An seiner Seite: Trevor Slattery."],
+["dba2","S",2026.03,"Daredevil: Born Again · Staffel 2","Disney+","Matt Murdock und Karen Page organisieren den Widerstand gegen Bürgermeister Fisk. Jessica Jones kehrt zurück.",{sn:"Daredevil: Born Again 2"}],
+["pun2","S",2026.05,"The Punisher: One Last Kill","Special","Special um Frank Castle nach den Ereignissen von Born Again."],
+["vq","S",2026.10,"VisionQuest","Disney+","Der weiße Vision sucht nach WandaVision heraus, wer er ist. Ultron kehrt zurück."],
+["oneshots","S",2011.09,"Marvel One-Shots","Kurzfilme","Fünf Kurzfilme von den Blu-rays: The Consultant, A Funny Thing Happened on the Way to Thor's Hammer, Item 47, Agent Carter und All Hail the King. Sie füllen Lücken zwischen den Filmen.",{yl:"2011–14"}],
+["helstrom","S",2020.10,"Helstrom","Hulu","Horrorserie um die Geschwister Daimon und Ana Helstrom, Kinder eines Serienmörders. Ohne Verbindung zu anderen Titeln."],
+["modok","S",2021.05,"M.O.D.O.K.","Hulu","Stop-Motion-Komödie um den Schurken mit dem Riesenkopf. Eigenes Universum."],
+["howard86","X",1986.08,"Howard the Duck","Universal","Der erste Marvel-Kinofilm, produziert von George Lucas, und ein legendärer Flop."],
+["hulk03","X",2003.06,"Hulk","Universal","Ang Lees Fassung mit Eric Bana. Kein Teil des MCU, aber The Incredible Hulk beginnt dort, wo dieser Film aufhört: mit Banner auf der Flucht in Südamerika."],
+["pun04","X",2004.04,"The Punisher & War Zone","Lionsgate","Zwei Anläufe mit Thomas Jane (2004) und Ray Stevenson (2008).",{yl:"2004/08"}],
+["ghost","X",2007.02,"Ghost Rider 1 & 2","Sony","Nicolas Cage als Stuntfahrer Johnny Blaze, der seine Seele verkauft hat.",{yl:"2007/12"}],
+["legion","X",2017.02,"Legion","FX","David Haller hält sich für schizophren und ist in Wahrheit einer der mächtigsten Mutanten und der Sohn von Charles Xavier. Eigene Kontinuität.",{yl:"2017–19"}],
+["gifted","X",2017.10,"The Gifted","Fox TV","Eine Familie mit Mutantenkindern taucht im Untergrund unter. Die X-Men sind verschwunden.",{yl:"2017–19"}],
+// Sony
+["sm1","Y",2002.05,"Spider-Man","Raimi","Peter Parker wird von einer Spinne gebissen, verliert Onkel Ben und kämpft gegen Norman Osborn, den Green Goblin."],
+["sm2","Y",2004.06,"Spider-Man 2","Raimi","Peter will aufhören und verliert seine Kräfte, bis Doctor Octopus die Stadt bedroht. Harry Osborn erfährt, wer Spider-Man ist."],
+["sm3","Y",2007.05,"Spider-Man 3","Raimi","Ein außerirdischer Symbiont macht Peter aggressiv und danach Eddie Brock zu Venom. Dazu Sandman und Harry als neuer Goblin."],
+["asm1","Y",2012.07,"The Amazing Spider-Man","Webb","Neustart mit Andrew Garfield: Peter verliebt sich in Gwen Stacy und stellt Dr. Connors, die Echse."],
+["asm2","Y",2014.04,"The Amazing Spider-Man 2","Webb","Electro und Harry Osborn als Green Goblin greifen an. Gwen Stacy stirbt.",{de:"Rise of Electro"}],
+["venom","Y",2018.10,"Venom","SSU","Der Reporter Eddie Brock verschmilzt mit dem Symbionten Venom und wird zum Antihelden. Start von Sonys eigenem Universum ohne Spider-Man."],
+["itsv","Y",2018.12,"Spider-Man: Into the Spider-Verse","Spider-Verse","Miles Morales wird Spider-Man. Kingpins Teilchenbeschleuniger holt Spider-Leute aus anderen Dimensionen in seine Welt.",{de:"Spider-Man: A New Universe",sn:"Into the Spider-Verse"}],
+["venom2","Y",2021.10,"Venom: Let There Be Carnage","SSU","Der Serienmörder Cletus Kasady wird zu Carnage. Im Abspann versetzt ein Lichtblitz Eddie in das Universum des MCU.",{sn:"Venom 2: Let There Be Carnage"}],
+["morb","Y",2022.04,"Morbius","SSU","Der Arzt Michael Morbius macht sich beim Versuch, seine Blutkrankheit zu heilen, zum Vampir. Im Abspann landet Adrian Toomes aus Homecoming in diesem Universum."],
+["atsv","Y",2023.06,"Spider-Man: Across the Spider-Verse","Spider-Verse","Miles trifft die Spider-Society um Miguel O'Hara, die feste „Kanon-Ereignisse“ bewacht, und landet am Ende auf der falschen Erde.",{sn:"Across the Spider-Verse"}],
+["mweb","Y",2024.02,"Madame Web","SSU","2003: Die Sanitäterin Cassandra Webb sieht die Zukunft und beschützt drei Mädchen, die einmal Spider-Women werden."],
+["venom3","Y",2024.10,"Venom: The Last Dance","SSU","Eddie und Venom werden von den Kreaturen des Symbionten-Gottes Knull gejagt. Venom opfert sich."],
+["kraven","Y",2024.12,"Kraven the Hunter","SSU","Ursprung des Jägers Sergei Kravinoff. Der letzte Film des SSU."],
+["noir","Y",2026.05,"Spider-Noir","Serie","Realserie mit Nicolas Cage als gealtertem Privatdetektiv im New York der 1930er. Eigenes Universum."],
+["btsv","Y",2027.06,"Spider-Man: Beyond the Spider-Verse","Spider-Verse","Kinostart Juni 2027. Abschluss der Trilogie um Miles Morales.",{soon:1,sn:"Beyond the Spider-Verse"}],
+// Fox & frühe Filme
+["blade","X",1998.08,"Blade-Trilogie","New Line","Wesley Snipes als Vampirjäger. Der Erfolg ebnete den Weg für alle späteren Marvel-Filme.",{yl:"1998–2004"}],
+["x1","X",2000.07,"X-Men","X-Men","Wolverine und Rogue stoßen zu Charles Xaviers X-Men, die sich Magneto entgegenstellen."],
+["dare03","X",2003.02,"Daredevil & Elektra","Fox","Ben Affleck als Matt Murdock, Jennifer Garner als Elektra. Eigene Kontinuität.",{yl:"2003/05"}],
+["x2","X",2003.05,"X2","X-Men","William Stryker will alle Mutanten töten. Logan findet Spuren des Waffe-X-Programms, Jean Grey opfert sich."],
+["f4a","X",2005.07,"Fantastic Four","F4","Reed, Sue, Johnny (Chris Evans) und Ben bekommen ihre Kräfte, Victor von Doom wird ihr Feind."],
+["x3","X",2006.05,"X-Men: The Last Stand","X-Men","Ein Heilmittel gegen Mutationen und Jeans dunkle Phoenix-Seite spalten die Mutanten.",{de:"X-Men: Der letzte Widerstand"}],
+["f4b","X",2007.06,"Fantastic Four: Rise of the Silver Surfer","F4","Der Silver Surfer kündigt den Weltenverschlinger Galactus an.",{sn:"F4: Rise of the Silver Surfer"}],
+["xow","X",2009.05,"X-Men Origins: Wolverine","X-Men","Logans Vorgeschichte: Er bekommt sein Adamantium-Skelett. Wade Wilson tritt in einer ersten, stummen Fassung auf."],
+["xfc","X",2011.06,"X-Men: First Class","X-Men","1962: Der junge Charles Xavier und Erik Lehnsherr gründen die X-Men und entzweien sich in der Kubakrise.",{de:"X-Men: Erste Entscheidung"}],
+["wolv","X",2013.07,"The Wolverine","X-Men","Logan in Japan: Ein alter Bekannter will ihm die Unsterblichkeit nehmen.",{de:"Wolverine: Weg des Kriegers"}],
+["dofp","X",2014.05,"X-Men: Days of Future Past","X-Men","Logans Geist wird nach 1973 geschickt, um eine Zukunft voller Sentinels zu verhindern. Die Zeitlinie wird neu geschrieben.",{de:"X-Men: Zukunft ist Vergangenheit"}],
+["f4c","X",2015.08,"Fantastic Four","F4","Neustart mit jungem Team, ohne Folgen für spätere Filme."],
+["dp1","X",2016.02,"Deadpool","Deadpool","Der Söldner Wade Wilson wird durch ein Experiment unsterblich und entstellt. Er redet direkt mit dem Publikum."],
+["xapo","X",2016.05,"X-Men: Apocalypse","X-Men","1983: Der erste Mutant En Sabah Nur erwacht."],
+["logan","X",2017.03,"Logan","X-Men","2029: Ein gealterter Logan bringt das Mädchen Laura in Sicherheit und stirbt.",{de:"Logan – The Wolverine"}],
+["dp2","X",2018.05,"Deadpool 2","Deadpool","Wade gründet die X-Force und schützt einen Jungen vor dem Zeitreisenden Cable."],
+["xdp","X",2019.06,"Dark Phoenix","X-Men","Jean Grey wird von einer kosmischen Kraft überwältigt. Letztes Kapitel der Hauptreihe.",{de:"X-Men: Dark Phoenix"}],
+["nm","X",2020.08,"The New Mutants","X-Men","Junge Mutanten in einer abgelegenen Klinik. Letzter Film der Fox-Ära."]
+];
+
+// [id, Typ (c Figur, a Artefakt, p Handlung), Name, Beschreibung, Stationen, Farbschlüssel]
+const HH=[
+// ----- Figuren -----
+["tony","c","Tony Stark / Iron Man","Vom Waffenhändler zu dem Mann, der das Universum rettet. Sein Erbe prägt alles, was danach kommt.",{
+ im1:"Baut die erste Rüstung und outet sich öffentlich.",hulk:"Besucht General Ross: Ein Team entsteht.",im2:"Heilt seine Vergiftung mit einem neuen Element.",av1:"Trägt die Atomrakete durch das Portal.",im3:"Verarbeitet New York und sprengt seine Rüstungen.",av2:"Erschafft Ultron aus Angst vor der nächsten Invasion.",cap3:"Unterschreibt das Sokovia-Abkommen und rekrutiert Peter Parker.",smh:"Mentor für Peter, nimmt ihm zeitweise den Anzug weg.",iw:"Kämpft auf Titan. Strange tauscht den Zeitstein gegen sein Leben.",eg:"Erfindet die Zeitreise und opfert sich mit dem letzten Schnippen.",ffh:"Posthum: Er vererbt Peter die Brille E.D.I.T.H."}],
+["steve","c","Steve Rogers / Captain America","Der Supersoldat aus den 1940ern und das Gewissen der Avengers.",{
+ cap1:"Wird durch das Serum zum Supersoldaten und friert 1945 ein.",av1:"Erwacht in der Gegenwart und führt das Team.",cap2:"Deckt Hydra auf und erkennt Bucky.",av2:"Kann Mjölnir ein Stück bewegen.",cap3:"Verweigert das Abkommen, schützt Bucky und lässt den Schild zurück.",iw:"Verteidigt Wakanda.",eg:"Schwingt Mjölnir, bringt die Steine zurück und bleibt bei Peggy.",dd:"Chris Evans kehrt als Steve Rogers zurück."}],
+["peggy","c","Peggy Carter","Steves große Liebe, Mitgründerin von S.H.I.E.L.D. und in anderen Welten Captain Carter.",{
+ oneshots:"Der Kurzfilm Agent Carter, aus dem die Serie wurde.",aos:"Rückblenden in Staffel 2.",cap1:"Agentin an Steves Seite.",ac:"Ihre eigene Serie nach dem Krieg.",cap2:"Alt und krank im Pflegeheim.",ant1:"1989 bei S.H.I.E.L.D.",cap3:"Ihre Beerdigung, Sharon Carter ist ihre Nichte.",eg:"Steve bleibt in der Vergangenheit bei ihr.",wi:"Bekommt als Captain Carter das Serum.",mom:"Captain Carter der Erde-838 bei den Illuminati."}],
+["thor","c","Thor","Donnergott, König ohne Reich, am Ende Ziehvater.",{
+ thor:"Verliert Mjölnir und verdient ihn sich zurück.",av1:"Bringt Loki und den Tesserakt nach Asgard.",thor2:"Besiegt Malekith und verliert seine Mutter.",av2:"Hat eine Vision der Infinity-Steine.",ds1:"Abspann: Strange hilft bei der Suche nach Odin.",thor3:"Verliert Hammer, Auge, Vater und Asgard.",iw:"Schmiedet Stormbreaker und zielt nicht auf den Kopf.",eg:"Gebrochen in New Asgard, zieht mit den Guardians weiter.",thor4:"Stellt sich Gorr und wird Ziehvater von Love.",dd:"Chris Hemsworth ist dabei."}],
+["loki","c","Loki","Gott des Schabernacks. Stirbt in der einen Zeitlinie und wird in der anderen zum Hüter aller Zeitlinien.",{
+ thor:"Erfährt seine Herkunft und greift nach dem Thron.",av1:"Führt die Chitauri nach New York.",thor2:"Täuscht seinen Tod vor und herrscht als Odin.",thor3:"Hilft am Ende, Asgard zu evakuieren, und steckt den Tesserakt ein.",iw:"Wird von Thanos getötet.",eg:"Seine Variante von 2012 flieht mit dem Tesserakt.",loki1:"Diese Variante landet bei der TVA.",loki2:"Wird zum Gott der Geschichten.",dd:"Tom Hiddleston ist im Cast bestätigt."}],
+["hulkc","c","Bruce Banner / Hulk","Wissenschaftler mit einem grünen Problem, später Smart Hulk.",{
+ hulk03:"Eric Bana in Ang Lees Fassung.",hulk:"Auf der Flucht vor Ross, besiegt den Abomination.",av1:"Sein Geheimnis: Er ist immer wütend.",av2:"Kämpft gegen Tonys Hulkbuster und fliegt allein davon.",thor3:"Zwei Jahre Gladiator auf Sakaar.",iw:"Der Hulk weigert sich nach der Niederlage gegen Thanos.",eg:"Als Smart Hulk schnippt er alle zurück.",sc:"Abspann: untersucht die Zehn Ringe.",shulk:"Trainiert Jennifer und stellt seinen Sohn Skaar vor.",bnd:"Mark Ruffalo spielt mit."}],
+["ross","c","Thaddeus „Thunderbolt“ Ross","General, Außenminister, Präsident, Red Hulk.",{
+ hulk:"Jagt Banner (William Hurt).",cap3:"Legt als Außenminister das Sokovia-Abkommen vor.",iw:"Will die abtrünnigen Avengers verhaften.",bw:"Jagt Natasha.",cap4:"Als Präsident (Harrison Ford) wird er zum Red Hulk."}],
+["nat","c","Natasha Romanoff / Black Widow","Ehemalige Killerin aus dem Roten Raum, Herz der Avengers.",{
+ im2:"Als „Natalie Rushman“ bei Stark eingeschleust.",av1:"Verhört Loki und schließt das Portal.",cap2:"Stellt alle S.H.I.E.L.D.-Geheimnisse ins Netz.",av2:"Bringt den Hulk zur Ruhe.",cap3:"Wechselt die Seite und lässt Steve entkommen.",iw:"Kämpft in Wakanda.",eg:"Opfert sich auf Vormir für den Seelenstein.",bw:"Spielt nach Civil War: Sie zerschlägt den Roten Raum."}],
+["yelena","c","Yelena Belova","Natashas Ziehschwester und die neue Black Widow.",{
+ bw:"Erster Auftritt, befreit die anderen Widows.",hawk:"Jagt Clint und erfährt die Wahrheit über Natashas Tod.",tb:"Hauptfigur, holt Bob aus der Leere zurück.",dd:"Führt die New Avengers an."}],
+["clint","c","Clint Barton / Hawkeye","Der Schütze ohne Superkräfte.",{
+ thor:"Kurzauftritt als S.H.I.E.L.D.-Schütze.",av1:"Von Loki kontrolliert.",av2:"Hat heimlich eine Familie.",cap3:"Kämpft auf Steves Seite.",eg:"Wird nach dem Snap zum Killer Ronin.",hawk:"Arbeitet die Ronin-Jahre auf und bildet Kate Bishop aus."}],
+["fury","c","Nick Fury","Der Spion, der alle zusammenbringt.",{
+ im1:"Abspann: die Avengers-Initiative.",im2:"Setzt Tony unter Hausarrest.",thor:"Abspann: zeigt Selvig den Tesserakt.",cap1:"Empfängt Steve in der Gegenwart.",av1:"Bringt das Team zusammen.",aos:"Gastauftritte, macht Coulson zum Direktor.",cap2:"Täuscht seinen Tod vor.",av2:"Bringt den Helicarrier nach Sokovia.",iw:"Sendet im Zerfallen das Signal an Carol.",cm:"1995: trifft Carol und verliert sein Auge.",eg:"Bei Tonys Beerdigung.",ffh:"Ist in Wahrheit der Skrull Talos.",si:"Kehrt aus dem All zurück.",marvels:"Leitet die Raumstation S.A.B.E.R."}],
+["bucky","c","Bucky Barnes / Winter Soldier","Steves bester Freund, Hydras Waffe, später Politiker und Avenger.",{
+ cap1:"Stürzt vom Zug und gilt als tot.",cap2:"Kehrt als Winter Soldier zurück.",cap3:"Zemo aktiviert seine Programmierung.",bp1:"Abspann: in Wakanda geheilt.",iw:"Kämpft in Wakanda und zerfällt.",eg:"Kehrt zurück.",fws:"Arbeitet seine Schuld ab.",cap4:"Kurzauftritt, kandidiert für den Kongress.",tb:"Abgeordneter und Kopf der Thunderbolts.",dd:"Teil der New Avengers."}],
+["sam","c","Sam Wilson / Falcon / Captain America","Vom Flügelmann zum Träger des Schilds.",{
+ cap2:"Erster Auftritt als Falcon.",av2:"Neues Mitglied am Ende.",ant1:"Kämpft kurz gegen Scott Lang.",cap3:"Auf Steves Seite.",iw:"Zerfällt in Wakanda.",eg:"Bekommt von Steve den Schild.",fws:"Wird Captain America.",cap4:"Erster Kinofilm als Cap, soll die Avengers neu aufbauen.",dd:"Führt seine Avengers an."}],
+["wanda","c","Wanda Maximoff / Scarlet Witch","Vom Hydra-Experiment zur mächtigsten Hexe.",{
+ cap2:"Abspann: Hydra-Experiment mit dem Zepter.",av2:"Erst Gegnerin, dann Avenger. Ihr Bruder Pietro stirbt.",cap3:"Das Unglück von Lagos löst das Abkommen aus.",iw:"Muss Vision töten, und es nützt nichts.",eg:"Stellt Thanos allein.",wv:"Erschafft Westview und wird zur Scarlet Witch.",mom:"Vom Darkhold verdorben, begräbt sie sich unter dem Berg Wundagore."}],
+["vision","c","Vision","Aus J.A.R.V.I.S., Vibranium und dem Gedankenstein gebaut.",{
+ im1:"Beginnt als Tonys KI J.A.R.V.I.S.",av2:"Entsteht und hebt Mjölnir.",cap3:"Auf Tonys Seite.",iw:"Stirbt zweimal.",wv:"Wandas Vision und der weiße Vision von S.W.O.R.D.",vq:"Der weiße Vision sucht seine Identität."}],
+["peter","c","Peter Parker / Spider-Man (Tom Holland)","Der Spider-Man des MCU.",{
+ im2:"Der Junge mit der Iron-Man-Maske auf der Stark Expo ist laut Marvel der kleine Peter.",cap3:"Erster Auftritt, von Tony rekrutiert.",smh:"Besiegt den Vulture und lehnt den Avengers-Platz ab.",iw:"Zerfällt auf Titan.",eg:"Kehrt zurück und verliert Tony.",ffh:"Mysterio enthüllt seine Identität.",nwh:"Verliert Tante May und lässt sich von allen vergessen.",yfn:"Zeichentrick-Variante in einer anderen Zeitlinie.",bnd:"Allein in New York."}],
+["spideys","c","Die Spider-Men von Maguire und Garfield","Sonys frühere Filmreihen, die No Way Home nachträglich ins Multiversum holt.",{
+ sm1:"Tobey Maguire. Gegner: Green Goblin.",sm2:"Gegner: Doctor Octopus.",sm3:"Gegner: Sandman und Venom.",asm1:"Andrew Garfield. Gegner: die Echse.",asm2:"Gegner: Electro. Gwen stirbt.",nwh:"Beide helfen Hollands Peter, alle fünf Schurken werden geheilt.",atsv:"Kurze Realfilm-Ausschnitte beider."}],
+["miles","c","Miles Morales & das Spider-Verse","Sonys animierte Trilogie und ihre Ableger.",{
+ smh:"Aaron Davis erwähnt seinen Neffen.",itsv:"Miles wird Spider-Man. Mit dabei: Gwen, Peter B. Parker und Spider-Noir.",atsv:"Miles gegen die Spider-Society.",noir:"Spider-Noir bekommt eine Realserie (andere Version der Figur).",btsv:"Abschluss."}],
+["strange","c","Doctor Strange","Oberster Zauberer, dann nicht mehr.",{
+ cap2:"Sitwell nennt Stephen Strange als Ziel von Hydras Algorithmus.",ds1:"Wird zum Zauberer.",thor3:"Schickt Thor und Loki zu Odin.",iw:"Sieht 14.000.605 Zukünfte und gibt den Zeitstein her.",eg:"Zeigt Tony den einen Finger.",nwh:"Sein Vergessenszauber reißt das Multiversum auf.",mom:"Greift selbst zum Darkhold und bekommt ein drittes Auge."}],
+["wong","c","Wong","Bibliothekar, Oberster Zauberer und Bindeglied von Phase 4.",{
+ ds1:"Hüter der Bibliothek von Kamar-Taj.",iw:"Verteidigt das Sanctum.",eg:"Öffnet die Portale zur letzten Schlacht.",sc:"Kämpft im Käfig gegen Abomination.",nwh:"Ist jetzt Oberster Zauberer.",mom:"Wird von Wanda gezwungen, sie nach Wundagore zu führen.",shulk:"Mandant und Zeuge."}],
+["bp","c","Black Panther & Wakanda","T'Challa, Shuri und das verborgene Königreich.",{
+ im2:"Wakanda ist auf Furys Weltkarte markiert.",av2:"Klaue handelt mit gestohlenem Vibranium aus Wakanda.",cap3:"T'Challa tritt erstmals auf und jagt Bucky.",bp1:"T'Challa wird König.",iw:"Wakanda ist das Schlachtfeld.",eg:"Wakandas Armee kehrt zurück.",fws:"Die Dora Milaje holen Zemo.",bp2:"Shuri wird Black Panther.",eow:"Wakandas Agenten durch die Jahrhunderte.",dd:"Shuri, M'Baku und Namor sind im Cast."}],
+["guardians","c","Guardians of the Galaxy","Star-Lord, Gamora, Drax, Rocket, Groot, Mantis und Nebula.",{
+ gotg1:"Das Team findet sich.",gotg2:"Egos Plan, Yondus Opfer.",iw:"Gamora stirbt, Quill verpatzt den Plan auf Titan.",eg:"Eine Gamora von 2014 bleibt in der Gegenwart.",thor4:"Trennen sich früh von Thor.",groot:"Baby Groots Kurzfilme.",ghs:"Weihnachten auf Knowhere.",gotg3:"Rocket übernimmt, Quill kehrt zur Erde zurück."}],
+["scott","c","Ant-Man & Wasp","Scott Lang, Hope van Dyne und die Familie Pym.",{
+ ant1:"Scott wird Ant-Man.",cap3:"Wird zum Giant-Man.",ant2:"Rettung von Janet.",eg:"Scott bringt die Idee des Zeitraubs.",ant3:"Im Quantenreich gegen Kang.",dd:"Paul Rudd ist im Cast."}],
+["carol","c","Carol Danvers / Captain Marvel","Die stärkste Avengerin ist meist im All unterwegs.",{
+ cm:"Ursprung im Jahr 1995.",eg:"Rettet Tony aus dem All und zerstört Thanos' Schiff.",sc:"Abspann: als Hologramm zugeschaltet.",msm:"Abspann: tauscht den Platz mit Kamala.",marvels:"Im Trio mit Monica und Kamala."}],
+["matt","c","Matt Murdock / Daredevil","Der Mann ohne Furcht.",{
+ dare03:"Ben Affleck in einer eigenen Kontinuität.",dd1:"Charlie Cox, drei Staffeln.",def:"Gilt nach dem Einsturz als tot.",nwh:"Peters Anwalt, fängt einen Ziegelstein.",shulk:"Im gelben Anzug in Los Angeles.",echo:"Rückblende: Kampf gegen Maya.",dba1:"Legt die Maske ab und zieht sie wieder an.",dba2:"Im Untergrund gegen Fisk."}],
+["frank","c","Frank Castle / Punisher","Der Selbstjustizler mit dem Totenkopf.",{
+ pun04:"Frühere Kinofassungen mit Thomas Jane und Ray Stevenson.",dd1:"Erster Auftritt in Staffel 2.",pun:"Zwei eigene Staffeln.",dba1:"Hilft Matt gegen Fisks Sondereinheit.",pun2:"Eigenes Special.",bnd:"Erster Kinoauftritt dieser Version."}],
+["defs","c","Jessica Jones, Luke Cage & Iron Fist","Die anderen Defenders.",{
+ eow:"Eine Iron Fist aus früherer Zeit tritt auf.",jj:"Jessica und Luke lernen sich kennen.",lc:"Luke in Harlem.",ifist:"Danny Rand kehrt zurück.",def:"Alle vier gemeinsam.",dba2:"Jessica Jones kehrt zurück."}],
+["trevor","c","Trevor Slattery","Der Schauspieler, der den Mandarin nur gespielt hat.",{
+ oneshots:"All Hail the King: Im Gefängnis erfährt er, dass der echte Mandarin ihn sucht.",im3:"Fliegt als falscher Mandarin auf.",sc:"Gefangener des echten Mandarin, hilft Shang-Chi.",wm:"Zurück in Hollywood an der Seite von Simon Williams."}],
+["blade","c","Blade","Der Vampirjäger wartet seit Jahren auf seinen MCU-Film.",{
+ blade:"Wesley Snipes in drei Filmen.",et:"Abspann: Mahershala Alis Stimme spricht Dane Whitman an.",dw:"Snipes kehrt in der Leere zurück.",mz:"Als „Blade Knight“ im Dienst von Khonshu."}],
+["f4","c","Fantastic Four","Marvels erste Familie in drei Anläufen bei Fox und einem im MCU.",{
+ f4a:"Erste Kinofassung.",f4b:"Mit dem Silver Surfer.",f4c:"Kurzlebiger Neustart.",mom:"Reed Richards der Erde-838 (John Krasinski).",dw:"Chris Evans als Johnny Storm von 2005.",tb:"Abspann: ihr Schiff erreicht Erde-616.",ff:"Das MCU-Team auf Erde-828.",dd:"Treffen auf die Avengers."}],
+["doom","v","Doctor Doom","Der Hauptgegner der Multiversums-Saga.",{
+ f4a:"Victor von Doom (Julian McMahon).",f4b:"Stiehlt das Brett des Surfers.",f4c:"Neue Fassung (Toby Kebbell).",ff:"Abspann: steht bei Franklin Richards.",dd:"Robert Downey Jr. als Doom.",sw:"Voraussichtlich das Finale."}],
+["wolverine","c","Logan / Wolverine","Hugh Jackmans Figur über ein Vierteljahrhundert.",{
+ x1:"Stößt zu den X-Men.",x2:"Sucht seine Vergangenheit.",x3:"Muss Jean töten.",xow:"Vorgeschichte.",xfc:"Cameo: schickt Charles und Erik weg.",wolv:"Japan.",dofp:"Reist geistig nach 1973.",xapo:"Cameo als Waffe X.",logan:"Stirbt 2029.",dw:"Ein anderer Logan wird ins Spiel geholt."}],
+["deadpool","c","Wade Wilson / Deadpool","Der Söldner, der weiß, dass er in einem Film ist.",{
+ xow:"Erste, zugenähte Fassung.",dp1:"Neustart der Figur.",dp2:"X-Force und Cable. Er erschießt per Zeitreise sein früheres Ich.",dw:"Wechselt über die TVA ins MCU."}],
+["xmen","c","Professor X & die X-Men","Die Mutanten der Fox-Filme und ihr Weg ins MCU.",{
+ legion:"Xaviers Sohn David Haller.",gifted:"Die X-Men sind verschwunden, der Untergrund kämpft allein.",x1:"Die Schule und das Team.",x2:"Angriff auf die Schule.",x3:"Xavier und Cyclops sterben.",xfc:"Die Gründung 1962.",dofp:"Zwei Generationen in einem Film.",xapo:"Das junge Team von 1983.",logan:"Die X-Men sind tot, Xavier stirbt.",xdp:"Ende der Hauptreihe.",nm:"Ableger mit jungen Mutanten.",mom:"Xavier der Erde-838 im gelben Schwebestuhl.",marvels:"Abspann: Beast untersucht Monica.",xm97:"Eigene Zeichentrick-Kontinuität.",dw:"Gambit, X-23, Pyro und andere in der Leere.",dd:"Stewart, McKellen, Marsden und weitere kehren zurück."}],
+// ----- Artefakte & Technik -----
+["space","a","Raumstein · Tesserakt","Blauer Würfel, der Portale durch den Raum öffnet.",{
+ im2:"In Howard Starks Notizbuch ist der Würfel skizziert.",cap1:"Red Skull baut damit Waffen. Howard Stark birgt ihn aus dem Meer.",thor:"Abspann: Fury zeigt ihn Erik Selvig.",av1:"Loki öffnet das Portal über New York. Thor bringt den Würfel nach Asgard.",thor3:"Loki steckt ihn in Odins Schatzkammer ein.",iw:"Thanos nimmt ihn Loki ab und zerbricht die Hülle.",cm:"Rückblick 1995: Er speist Mar-Vells Antrieb und gibt Carol ihre Kräfte.",eg:"2012 entkommt Loki mit ihm, Tony und Steve holen ihn 1970 aus Camp Lehigh.",loki1:"In der TVA wirkungslos, dort dienen Infinity-Steine als Briefbeschwerer."},"space"],
+["mind","a","Gedankenstein · Lokis Zepter","Gelber Stein, der Geister lenkt und Bewusstsein schafft.",{
+ av1:"Steckt in Lokis Zepter, einem Geschenk von Thanos.",cap2:"Abspann: Hydra experimentiert damit an Wanda und Pietro.",av2:"Aus ihm entsteht erst Ultron, dann Vision.",cap3:"Sitzt in Visions Stirn.",iw:"Thanos reißt ihn Vision heraus.",eg:"2012 erschwindelt Steve das Zepter.",wv:"Er hat Wandas angeborene Magie nur verstärkt."},"mind"],
+["reality","a","Realitätsstein · Äther","Rote Flüssigkeit, die die Wirklichkeit umformt.",{
+ thor2:"Befällt Jane Foster. Danach geht er an den Collector.",iw:"Thanos holt ihn auf Knowhere.",eg:"Rocket zieht ihn 2013 in Asgard aus Jane heraus."},"reality"],
+["power","a","Machtstein · Orb","Violetter Stein, der ganze Planeten zerstören kann.",{
+ gotg1:"Quill stiehlt den Orb, Ronan will damit Xandar vernichten. Verwahrt vom Nova Corps.",iw:"Thanos hat Xandar vor Filmbeginn überfallen.",eg:"Rhodey und Nebula holen ihn 2014 auf Morag."},"power"],
+["time","a","Zeitstein · Auge von Agamotto","Grüner Stein, der die Zeit vor- und zurückdreht.",{
+ ds1:"Strange fängt Dormammu in einer Zeitschleife.",thor3:"Strange trägt das Auge.",iw:"Strange gibt ihn Thanos für Tonys Leben.",eg:"Die Älteste gibt ihn 2012 an Bruce Banner."},"time"],
+["soul","a","Seelenstein · Vormir","Orangefarbener Stein, der ein Opfer verlangt: eine geliebte Seele.",{
+ iw:"Thanos opfert Gamora. Der Wächter ist Red Skull.",eg:"Natasha opfert sich für Clint."},"soul"],
+["mjolnir","a","Mjölnir & Stormbreaker","Thors Hammer hebt nur, wer würdig ist.",{
+ im2:"Abspann: Coulson findet den Hammer in New Mexico.",thor:"Thor muss sich als würdig erweisen.",av1:"Hammer gegen Schild.",thor2:"Im Kampf gegen Malekith.",av2:"Vision hebt ihn, Steve bewegt ihn.",thor3:"Hela zerdrückt ihn.",iw:"Stormbreaker wird in Nidavellir geschmiedet.",eg:"Steve führt einen Mjölnir aus der Vergangenheit.",thor4:"Die Splitter setzen sich für Jane zusammen."}],
+["shield","a","Captain Americas Schild","Scheibe aus Vibranium und das Symbol, um das gestritten wird.",{
+ im1:"Ein halbfertiger Schild liegt auf Tonys Werkbank.",im2:"Tony nutzt einen Prototyp als Unterlage für seinen Teilchenbeschleuniger.",cap1:"Howard Stark baut ihn.",av1:"Hält Thors Hammer stand.",cap2:"Im Kampf gegen Bucky.",av2:"Thors Vision zeigt ihn zerbrochen.",cap3:"Steve lässt ihn bei Tony zurück.",eg:"Thanos zerschlägt ihn. Der alte Steve gibt Sam einen neuen.",fws:"Erst bei John Walker, dann bei Sam.",cap4:"Sam trägt ihn als Captain America."}],
+["serum","a","Supersoldaten-Serum","Dr. Erskines Formel und alle Versuche, sie nachzubauen.",{
+ aos:"Das Centipede-Serum mischt Erskines Formel mit Extremis und Gammastrahlung.",cap4:"Isaiah Bradley kehrt zurück. Sam bleibt bewusst ohne Serum.",cap1:"Macht Steve zum Supersoldaten und Schmidt zum Red Skull.",hulk:"Banners Gammastrahlen waren ein Versuch, es nachzubauen. Blonsky bekommt eine Kopie.",cap2:"Hydras Fassung in Bucky.",cap3:"Fünf weitere Winter Soldiers in Sibirien.",fws:"Die Flag Smashers, John Walker und der vergessene Isaiah Bradley.",bw:"Red Guardian ist die sowjetische Antwort.",tb:"Das Sentry-Projekt führt die Idee ins Extrem."}],
+["vibranium","a","Vibranium","Das Metall aus Wakanda, das Energie schluckt.",{
+ cap1:"Der Schild besteht daraus.",av2:"Ultron kauft es bei Klaue, Vision bekommt einen Körper daraus.",cap3:"Der Anzug des Black Panther.",bp1:"Grundlage von Wakandas Reichtum.",iw:"Schutzschild um Wakanda.",fws:"Buckys Arm und Sams neue Flügel.",bp2:"Auch Talokan besitzt es. Riris Detektor löst den Konflikt aus.",eow:"Agenten holen verlorene Artefakte zurück.",cap4:"Mit Adamantium taucht eine Alternative auf."}],
+["adamantium","a","Adamantium","Das unzerstörbare Metall verbindet die Fox-Filme mit dem MCU.",{
+ x2:"Stryker und das Waffe-X-Programm.",xow:"Logan bekommt sein Metallskelett.",wolv:"Der Silver Samurai will es ihm nehmen.",logan:"Das Metall vergiftet Logan.",et:"Kein Adamantium zu sehen: Der versteinerte Celestial Tiamut bleibt im Ozean zurück. Dort wird das Metall später in Brave New World gefunden.",dw:"Das Skelett des toten Logan dient Wade als Waffe.",cap4:"Auf der Celestial-Insel wird im MCU Adamantium entdeckt."}],
+["darkhold","a","Darkhold","Das Buch der Verdammten verdirbt jeden, der darin liest.",{
+ aos:"Staffel 4, in anderer Gestalt.",run:"Staffel 3: Morgan le Fay will es.",wv:"Agatha besitzt es, am Ende liest Wanda darin.",mom:"Wanda ist verdorben, zerstört am Ende alle Fassungen.",agatha:"Agatha ohne Buch und ohne Kräfte."}],
+["tenrings","a","Die Zehn Ringe","Erst nur der Name einer Terrorgruppe, dann echte Waffen.",{
+ oneshots:"All Hail the King: Die echte Organisation holt sich Trevor.",im1:"Die Gruppe „Zehn Ringe“ entführt Tony.",im2:"Ein Mittelsmann der Gruppe hilft Vanko.",im3:"Der Mandarin ist ein Schauspieler.",ant1:"Ein Käufer trägt das Tattoo der Gruppe.",sc:"Die echten Ringe und ihr Besitzer Wenwu. Sie senden ein Signal.",msm:"Kamalas Armreif wurde in einem Tempel mit dem Zeichen der Ringe gefunden.",wm:"Trevor lebt mit seiner Mandarin-Vergangenheit."}],
+["bangles","a","Quantum Bands","Zwei Armreife, die Sprungpunkte im All öffnen.",{
+ msm:"Kamala bekommt den ersten Armreif von ihrer Großmutter.",marvels:"Dar-Benn findet den zweiten, die Kräfte der drei Heldinnen verschränken sich."}],
+["pym","a","Pym-Partikel & Quantenreich","Hank Pyms Erfindung macht erst klein und dann Zeitreisen möglich.",{
+ ant1:"Scott schrumpft bis ins Quantenreich.",cap3:"In die andere Richtung: Giant-Man.",ant2:"Janet wird gerettet, Scott bleibt stecken.",eg:"Der Weg durch das Quantenreich ermöglicht den Zeitraub.",ant3:"Im Quantenreich sitzt Kang fest."}],
+["stark","a","Stark-Technik & Tonys Erbe","Arc-Reaktor, Rüstungen, KIs und alle, die sie haben wollen.",{
+ im1:"Arc-Reaktor und erste Rüstung. Obadiah Stane stiehlt die Pläne.",im2:"Hammer und Vanko kopieren sie, Rhodey wird War Machine.",av1:"Der Stark Tower wird zum Avengers-Turm.",im3:"Dutzende ferngesteuerte Rüstungen.",av2:"Ultron.",cap3:"Peters erster Hightech-Anzug.",smh:"Tonys Aufräumfirma Damage Control verdrängt Toomes.",ffh:"Mysterio und sein Team sind verbitterte Ex-Angestellte.",ih:"Riri baut ihre eigene Rüstung. Obadiah Stanes Sohn tritt auf.",vq:"Ultron kehrt zurück."}],
+["symbiote","a","Der Venom-Symbiont","Das außerirdische Wesen, das zwischen Sonys Welt und dem MCU springt.",{
+ sm3:"Der schwarze Anzug und der erste Kino-Venom.",venom:"Eddie Brock und Venom finden sich. Abspann: Cletus Kasady im Gefängnis.",venom2:"Abspann: Ein Lichtblitz versetzt beide ins MCU.",nwh:"Abspann: Eddie wird zurückgeschickt, ein Tropfen bleibt im MCU.",venom3:"Knull, der Kodex und Venoms Opfer."}],
+// ----- Handlungsstränge -----
+["thanos","v","Thanos und der Infinity-Krieg","Der rote Faden der ersten drei Phasen.",{
+ et:"Abspann: Eros stellt sich als Bruder von Thanos vor.",wi:"In einer Zeitlinie bekehrt ihn T'Challa, in einer anderen halbiert ihn Ultron.",av1:"Abspann: Er steckt hinter Lokis Angriff.",gotg1:"Schickt Ronan los. Gamora und Nebula sind seine Ziehtöchter.",av2:"Abspann: greift selbst zum Handschuh.",thor3:"Abspann: Sein Schiff stellt die Flüchtlinge aus Asgard.",iw:"Sammelt alle Steine und schnippt.",ant2:"Abspann: Der Snap trifft die Pyms.",cm:"Abspann: Carol folgt Furys Signal.",eg:"Wird zweimal besiegt."}],
+["nyc","p","Die Schlacht von New York und ihre Folgen","Der Tag, an dem die Welt von Außerirdischen erfuhr.",{
+ oneshots:"Item 47: Ein Paar raubt mit einer Chitauri-Waffe Banken aus.",av1:"Der Angriff der Chitauri.",im3:"Tonys Panikattacken.",aos:"S.H.I.E.L.D. räumt hinterher auf.",dd1:"Fisk verdient am Wiederaufbau von Hell's Kitchen.",smh:"Toomes baut aus dem Schrott Waffen.",eg:"Die Avengers reisen in die Schlacht zurück.",loki1:"Lokis Flucht von dort ruft die TVA.",hawk:"Kate Bishop wird als Kind von Hawkeye gerettet."}],
+["hydra","p","Hydra & der Fall von S.H.I.E.L.D.","Der Geheimbund überlebt den Krieg im Inneren seines Gegners.",{
+ cap1:"Red Skulls Wissenschaftsabteilung.",ac:"Aus der SSR wird S.H.I.E.L.D., Hydra-Forscher werden angeworben.",av1:"S.H.I.E.L.D. auf dem Höhepunkt. Ratsmitglied Gideon Malick entpuppt sich später in der Serie als Hydra-Führer.",cap2:"Die Enthüllung: Hydra steckt in S.H.I.E.L.D.",aos:"Die Serie kippt in derselben Woche.",av2:"Baron Strucker und die letzte Hydra-Basis.",ant1:"Hydra will die Schrumpftechnik kaufen.",cap3:"Zemo nutzt alte Hydra-Akten.",eg:"Steve flüstert „Heil Hydra“ und bekommt das Zepter.",fws:"Zemo und die Reste des Winter-Soldier-Programms."}],
+["sokovia","p","Sokovia-Abkommen & der Bruch der Avengers","Wer kontrolliert Superhelden?",{
+ aos:"Inhumans sollen sich nach dem Abkommen registrieren.",av2:"Sokovia wird zerstört.",cap3:"Das Abkommen spaltet das Team.",bw:"Natasha ist auf der Flucht.",ant2:"Scott sitzt im Hausarrest.",iw:"Thanos trifft auf ein zerstrittenes Team.",wv:"Wandas Herkunft und ihre Trauer.",fws:"Zemo, der Sokovier, kehrt zurück.",shulk:"Das Abkommen gilt als aufgehoben."}],
+["blip","p","Der Blip","Die halbe Welt verschwindet für fünf Jahre und kommt zurück.",{
+ iw:"Der Snap.",ant2:"Scott verliert die Pyms.",eg:"Fünf Jahre später die Rückkehr.",ffh:"Mitschüler sind plötzlich fünf Jahre älter.",wv:"Monica kehrt im Krankenhaus zurück.",fws:"Die Flag Smashers wollen die Welt von vor der Rückkehr.",et:"Die Rückkehr der Menschen löst Tiamuts Geburt aus.",hawk:"Clints Familie war verschwunden, Yelena auch."}],
+["tva","p","Kang, die TVA & die Heilige Zeitlinie","Die Behörde, die Zeitlinien beschneidet, und der Mann dahinter.",{
+ eg:"Lokis Flucht erzeugt eine Abzweigung.",loki1:"Die TVA, Jener der bleibt und sein Tod.",ant3:"Kang der Eroberer und der Rat der Kangs.",loki2:"Victor Timely. Loki ersetzt den Webstuhl.",dw:"Die TVA beschneidet jetzt ganze Universen, Mr. Paradox handelt eigenmächtig."}],
+["multi","p","Multiversum, Inkursionen & Secret Wars","Der rote Faden der Phasen 4 bis 6.",{
+ ds1:"Die Älteste erwähnt das Multiversum.",itsv:"Sonys Animationsfilm macht die Idee populär.",eg:"Zeitreisen erzeugen abgezweigte Zeitlinien.",loki1:"Der Tod von Jenem der bleibt entfesselt alle Zeitlinien.",wi:"Der Watcher zeigt andere Welten.",nwh:"Gäste aus Sonys Universen.",mom:"Erde-616, Erde-838 und die erste Inkursion.",ant3:"Kangs Varianten rüsten sich.",atsv:"Die Spider-Society überwacht das Netz der Welten.",loki2:"Loki hält den Baum der Zeitlinien.",marvels:"Monica strandet in einer anderen Welt.",dw:"Die Leere und sterbende Universen.",yfn:"Eine abgezweigte Zeitlinie ohne Tony als Mentor.",tb:"Abspann: Ein Schiff aus einer anderen Welt kommt an.",ff:"Erde-828.",mz:"Die Zombie-Welt.",dd:"Die Welten prallen aufeinander.",sw:"Das Finale."}],
+["bridge","p","Brücken zwischen Sony und dem MCU","Wo die beiden Studios ihre Spider-Man-Welten verbinden.",{
+ cap3:"Durch den Vertrag mit Sony tritt Spider-Man im MCU auf.",smh:"Vulture, Scorpion und Prowler werden eingeführt.",ffh:"J. K. Simmons spielt wieder J. Jonah Jameson.",venom2:"Abspann: Eddie landet im MCU.",nwh:"Maguire, Garfield und ihre Gegner.",morb:"Abspann: Toomes wechselt in Sonys Universum.",atsv:"Donald Glover als Prowler in echt, das MCU wird als Erde-199999 erwähnt.",venom3:"Eddie ist wieder zu Hause.",bnd:"Scorpion aus Homecoming kehrt zurück."}],
+["ssu","p","Sonys Spider-Man-Universum (SSU)","Sechs Filme über Figuren aus Spider-Mans Umfeld, ohne Spider-Man. 2024 beendet.",{
+ venom:"Auftakt.",venom2:"Carnage.",morb:"Vampir-Ableger.",mweb:"Vorgeschichte im Jahr 2003.",venom3:"Abschluss der Venom-Trilogie.",kraven:"Der letzte Film."}],
+["streets","p","Die Straßen von New York: Kingpin-Saga","Wilson Fisk gegen die Helden ohne Weltraum.",{
+ dd1:"Fisks Aufstieg, Fall und Rückkehr.",jj:"Hell's Kitchen aus Jessicas Sicht.",lc:"Harlem.",ifist:"Die Hand.",def:"Vier Helden, ein Hochhaus.",pun:"Frank Castles Krieg.",hawk:"Fisk kehrt zurück und wird von Maya angeschossen.",echo:"Fisk überlebt und denkt an die Politik.",dba1:"Bürgermeister Fisk ruft das Kriegsrecht aus.",dba2:"Der Widerstand.",pun2:"Frank Castle allein.",bnd:"Dieselbe Stadt, jetzt im Kino."}],
+["tbolts","p","Valentina und die New Avengers","Contessa Valentina Allegra de Fontaine sammelt Leute für die Drecksarbeit.",{
+ ant2:"Ghost wird eingeführt.",fws:"Sie wirbt John Walker an.",bw:"Abspann: Sie lenkt Yelena auf Clint. Taskmaster und Red Guardian treten auf.",bp2:"Sie ist CIA-Direktorin.",tb:"Ihr Team wendet sich gegen sie und wird trotzdem ihr Aushängeschild.",dd:"Die New Avengers ziehen in den Kampf."}],
+["young","p","Die nächste Generation","Nach und nach treten die Mitglieder der Young Avengers auf.",{
+ wv:"Billy und Tommy, Wandas Zwillinge.",fws:"Eli Bradley.",hawk:"Kate Bishop.",mom:"America Chavez.",msm:"Kamala Khan.",thor4:"Love.",shulk:"Skaar.",bp2:"Riri Williams.",ant3:"Cassie Lang.",marvels:"Kamala wirbt Kate an und erwähnt Cassie.",agatha:"Billy lebt im Körper eines anderen Jungen und sucht Tommy.",ih:"Riri allein."}],
+["mutants","p","Mutanten kommen ins MCU","Seit dem Kauf von Fox rücken die X-Men näher.",{
+ shulk:"Eine Schlagzeile meldet einen Mann mit Metallklauen.",mom:"Erster Professor X im MCU, aus einer anderen Welt.",msm:"Kamala trägt eine „Mutation“ in sich.",bp2:"Namor nennt sich einen Mutanten.",marvels:"Abspann: Beast.",dw:"Abschied vom Fox-Universum.",dd:"Die X-Men der Fox-Filme treten an.",sw:"Danach sollen eigene MCU-Mutanten folgen."}],
+["celest","p","Celestials","Weltraumgötter, die Planeten als Brutstätten nutzen.",{
+ gotg1:"Knowhere ist der Kopf eines toten Celestials.",gotg2:"Ego ist einer.",et:"Arishem und die Geburt von Tiamut.",thor4:"Statuen in der Stadt der Götter.",cap4:"Die Welt streitet um Tiamuts Überreste."}],
+["hulk08","p","Das Erbe von The Incredible Hulk","Der Film von 2008 galt lange als vergessen. Seit Phase 4 greift das MCU seine offenen Enden wieder auf: Abomination, den Leader, Ross und Betty.",{
+ hulk03:"Vorläufer außerhalb des Kanons mit Eric Bana.",oneshots:"The Consultant erklärt Tonys Besuch bei Ross: Er soll verhindern, dass Blonsky zu den Avengers kommt.",hulk:"Emil Blonsky wird zum Abomination. Samuel Sterns bekommt Banners Blut in eine Kopfwunde, sein Schädel beginnt zu wachsen.",sc:"Abomination kämpft im Käfig von Macau gegen Wong, die beiden trainieren zusammen.",shulk:"Jennifer Walters vertritt Blonsky bei seiner Bewährung. Am Ende holt Wong ihn aus dem Gefängnis nach Kamar-Taj.",cap4:"Sterns kehrt nach 17 Jahren als Leader zurück und macht Ross zum Red Hulk. Betty Ross tritt wieder auf."}],
+["skrulls","p","Kree & Skrulls","Zwei Alien-Völker im Dauerkrieg, mit der Erde dazwischen.",{
+ gotg1:"Ronan ist ein Kree-Fanatiker.",aos:"Kree-Blut heilt Coulson.",cm:"Carol erfährt, dass die Skrulls Flüchtlinge sind. Ronan und Korath treten jünger auf.",ffh:"Talos vertritt Fury.",wv:"Abspann: Eine Skrull holt Monica ab.",si:"Graviks Aufstand.",marvels:"Die Kree-Heimat Hala stirbt. Dar-Benn führt Ronans Hammer."}],
+["inhumans","p","Inhumans","Menschen mit Kree-Erbe, die das Fernsehen statt der Mutanten bekam.",{
+ aos:"Terrigen verwandelt Daisy Johnson und viele andere.",inh:"Die Königsfamilie um Black Bolt.",mom:"Black Bolt der Erde-838 bei den Illuminati."}],
+["roxxon","p","Roxxon, der Konzern im Hintergrund","Der Energieriese taucht seit 2008 immer wieder am Bildrand auf.",{
+ im1:"Logo im Finale.",ac:"Roxxon-Raffinerie in Staffel 1.",aos:"Mehrfach am Rand.",dd1:"Mandant der Kanzlei, in der Matt und Foggy anfangen.",cd:"Eine Roxxon-Bohrinsel gibt Tandy und Tyrone ihre Kräfte.",loki1:"Showdown im Supermarkt „Roxxcart“ im Jahr 2050."}],
+// ----- weitere Figuren -----
+["rhodey","c","James Rhodes / War Machine","Tonys bester Freund in der zweiten Rüstung.",{
+ im1:"Gespielt von Terrence Howard, schaut schon auf die silberne Rüstung.",im2:"Jetzt Don Cheadle, nimmt sich die Mark II.",im3:"Als Iron Patriot umlackiert.",av2:"Hilft in Sokovia.",cap3:"Stürzt ab und ist danach gelähmt.",iw:"Kämpft in Wakanda.",cm:"Abspann: untersucht Furys Pager.",eg:"Holt mit Nebula den Machtstein.",fws:"Spricht mit Sam über den Schild.",si:"Wurde durch eine Skrull ersetzt."}],
+["coulson","c","Phil Coulson","Der Agent, dessen Tod die Avengers eint und der im Fernsehen weiterlebt.",{
+ im1:"Will Tony befragen.",im2:"Wird nach New Mexico abgezogen.",thor:"Sperrt die Fundstelle des Hammers ab.",oneshots:"Hauptfigur in zwei Kurzfilmen.",av1:"Wird von Loki erstochen.",aos:"Lebt dank Kree-Blut und führt ein eigenes Team.",cm:"1995 als junger Agent.",wi:"Mehrere Auftritte."}],
+["hill","c","Maria Hill","Furys rechte Hand.",{
+ av1:"Erster Auftritt.",cap2:"Hilft beim Sturz von Hydra.",aos:"Mehrere Gastauftritte.",av2:"Arbeitet jetzt für Stark.",iw:"Zerfällt im Abspann.",eg:"Bei Tonys Beerdigung.",ffh:"Ist in Wahrheit die Skrull Soren.",si:"Wird von Gravik erschossen."}],
+["pepper","c","Pepper Potts & Happy Hogan","Tonys Umfeld, das bei Peter Parker weitermacht.",{
+ im1:"Assistentin und Fahrer.",im2:"Pepper wird Firmenchefin.",av1:"Pepper im Stark Tower.",im3:"Pepper bekommt Extremis, Happy landet im Krankenhaus.",smh:"Happy betreut Peter widerwillig.",iw:"Pepper am Telefon, als Tony ins All fliegt.",eg:"Pepper kämpft in der Rescue-Rüstung.",ffh:"Happy und Tante May.",nwh:"Happy gibt Peter Unterschlupf.",dw:"Happy lehnt Wades Bewerbung bei den Avengers ab."}],
+["jane","c","Jane Foster, Darcy & Erik Selvig","Thors Menschen auf der Erde.",{
+ thor:"Finden Thor in der Wüste.",av1:"Selvig baut unter Lokis Einfluss das Portal.",thor2:"Jane trägt den Äther in sich.",av2:"Selvig hilft Thor bei seiner Vision.",eg:"Rocket nimmt der Jane von 2013 den Äther ab.",wv:"Darcy ist jetzt Astrophysikerin und entschlüsselt Westview.",thor4:"Jane wird Mighty Thor."}],
+["howard","c","Howard Stark & Edwin Jarvis","Tonys Vater zieht sich durch die ganze Vorgeschichte.",{
+ im1:"Nur als Name und Foto.",im2:"Filmrolle mit einer Botschaft an Tony.",cap1:"Baut Steves Schild und sucht ihn im Eis.",oneshots:"Im Kurzfilm Agent Carter.",ac:"Peggy entlastet ihn. Sein Butler ist der echte Jarvis.",ant1:"1989 mit Hank Pym bei S.H.I.E.L.D.",cap3:"1991 von Bucky ermordet.",eg:"1970 trifft Tony ihn. Jarvis fährt den Wagen."}],
+["rambeau","c","Monica & Maria Rambeau","Carols Wahlfamilie.",{
+ cm:"Maria ist Carols beste Freundin, Monica ein Kind.",wv:"Maria starb während des Blips. Monica bekommt Kräfte.",mom:"Maria ist auf Erde-838 Captain Marvel.",marvels:"Monica strandet in einer Welt, in der Maria als Binary lebt."}],
+["shangchi","c","Shang-Chi","Träger der Zehn Ringe.",{
+ sc:"Ursprung.",mz:"Variante in der Zombie-Welt.",dd:"Simu Liu ist im Cast."}],
+["kamala","c","Kamala Khan / Ms. Marvel","Der größte Avengers-Fan wird selbst Heldin.",{
+ msm:"Ursprung.",marvels:"Im Trio mit Carol und Monica.",mz:"Hauptfigur der Zombie-Welt."}],
+["walker","c","John Walker / U.S. Agent","Der Captain America, den die Regierung wollte.",{
+ fws:"Bekommt den Schild und verliert ihn nach einem Mord.",tb:"Mit eigenem Schild im Team.",dd:"Wyatt Russell ist im Cast."}],
+["gamneb","c","Gamora & Nebula","Die Ziehtöchter von Thanos.",{
+ gotg1:"Gamora wechselt die Seite, Nebula bleibt bei Ronan.",gotg2:"Die Schwestern versöhnen sich.",iw:"Thanos opfert Gamora.",eg:"Nebula tötet ihr früheres Ich. Eine Gamora von 2014 bleibt.",thor4:"Nebula bei den Guardians.",ghs:"Nebula schenkt Rocket Buckys Arm.",gotg3:"Gamora bleibt bei den Ravagers, Nebula führt Knowhere."}],
+["quick","c","Pietro / Quicksilver","Zwei Studios, zwei Fassungen und ein gemeiner Witz.",{
+ dofp:"Evan Peters befreit Magneto.",av2:"Aaron Taylor-Johnson stirbt in Sokovia.",xapo:"Peters rettet die Schule.",dp2:"Sekundenauftritt mit den jungen X-Men.",xdp:"Wird früh verletzt.",wv:"Evan Peters taucht als „Pietro“ auf und ist nur ein Nachbar namens Ralph."}],
+["claire","c","Claire Temple","Die Krankenschwester, die alle Netflix-Serien verbindet.",{
+ dd1:"Flickt Matt zusammen.",jj:"Hilft im Finale von Staffel 1.",lc:"Lukes Partnerin.",ifist:"Trainiert bei Colleen Wing.",def:"Bringt die vier zusammen."}],
+["karen","c","Karen Page & Foggy Nelson","Matts Freunde.",{
+ dd1:"Die Kanzlei Nelson and Murdock.",jj:"Foggy als Gast.",lc:"Foggy als Gast.",def:"Beide am Rand.",pun:"Karen an Franks Seite.",dba1:"Foggy wird von Bullseye erschossen.",dba2:"Karen im Widerstand."}],
+["duck","c","Howard the Duck","Der Running Gag aus dem Museum des Collectors.",{
+ howard86:"Der Film von 1986.",gotg1:"Abspann: sitzt im Trümmerfeld.",gotg2:"An der Bar.",eg:"Stürmt in der letzten Schlacht durch ein Portal.",wi:"Mehrere Auftritte.",gotg3:"Beim Kartenspiel."}],
+["jimmy","c","Jimmy Woo","FBI-Agent mit Kartentrick.",{
+ ant2:"Bewacht Scotts Hausarrest.",wv:"Ermittelt in Westview.",ant3:"Kurzer Auftritt."}],
+["everett","c","Everett Ross","Der CIA-Mann mit Draht nach Wakanda.",{
+ cap3:"Verhört Zemo.",bp1:"Wird in Wakanda geheilt.",bp2:"Hilft Wakanda und wird von seiner Ex-Frau Valentina verhaftet.",si:"Gleich zu Beginn durch einen Skrull ersetzt."}],
+["mystique","c","Mystique","Die Gestaltwandlerin.",{
+ x1:"Rebecca Romijn.",x2:"Schleust sich in Strykers Basis ein.",x3:"Verliert ihre Kräfte.",xfc:"Jennifer Lawrence als junge Raven.",dofp:"Ihr Attentat von 1973 entscheidet über die Zukunft.",xapo:"Führt die jungen X-Men.",xdp:"Stirbt.",dd:"Rebecca Romijn kehrt zurück."}],
+["beast","c","Hank McCoy / Beast","Der blaue Wissenschaftler.",{
+ x2:"Als Mensch kurz im Fernsehen.",x3:"Kelsey Grammer.",xfc:"Nicholas Hoult.",dofp:"Beide Fassungen.",xapo:"Lehrer an der Schule.",xdp:"Wendet sich gegen Charles.",marvels:"Grammer im Abspann.",dd:"Grammer ist im Cast."}],
+["gambit","c","Gambit","Der Kartenwerfer, der nie seinen eigenen Film bekam.",{
+ xow:"Taylor Kitsch.",dw:"Channing Tatum in der Leere.",dd:"Tatum ist im Cast."}],
+["jean","c","Jean Grey & die Phoenix-Kraft","Zweimal verfilmt, zweimal gestorben.",{
+ x1:"Famke Janssen.",x2:"Opfert sich am Alkali Lake.",x3:"Kehrt als Dark Phoenix zurück.",wolv:"Erscheint Logan in Träumen.",dofp:"In der neuen Zeitlinie lebt sie.",xapo:"Sophie Turner entfesselt die Kraft gegen Apocalypse.",xdp:"Die zweite Fassung der Geschichte.",xm97:"Jean, ihr Klon Madelyne und der Phoenix."}],
+["gwen","c","Gwen Stacy","Das Mädchen, das fällt, und das Mädchen, das selbst schwingt.",{
+ sm3:"Bryce Dallas Howard.",asm1:"Emma Stone.",asm2:"Stirbt im Uhrturm.",itsv:"Spider-Gwen.",nwh:"Garfields Peter fängt MJ auf und macht seinen Fehler wett.",atsv:"Zweite Hauptfigur.",btsv:"Abschluss."}],
+["jjj","c","J. Jonah Jameson","J. K. Simmons spielt ihn in zwei Universen.",{
+ sm1:"Chef des Daily Bugle.",sm2:"Nennt Spider-Man einen Dieb und Verbrecher.",sm3:"Mit Blutdrucktabletten.",ffh:"Enthüllt als Hetzer im Netz Peters Identität.",venom2:"Im Abspann im Fernsehen.",nwh:"Jagt Peter weiter."}],
+["prowler","c","Aaron Davis / Prowler","Miles' Onkel.",{
+ smh:"Donald Glover als Kleinkrimineller.",itsv:"Stirbt als Prowler.",atsv:"Glover in echt als Gefangener. Auf Erde-42 ist Miles selbst der Prowler."}],
+["ghostr","c","Ghost Rider","Der Geist der Rache.",{
+ ghost:"Nicolas Cage als Johnny Blaze.",aos:"Staffel 4: Robbie Reyes. Sein Vorgänger erinnert an Blaze."}],
+// ----- Gegenspieler -----
+["redskull","v","Red Skull","Hydras Gründer und später Wächter des Seelensteins.",{
+ cap1:"Wird vom Tesserakt fortgerissen.",iw:"Führt Thanos zum Seelenstein.",eg:"Empfängt Clint und Natasha.",wi:"Wird von einem Tentakelwesen zerquetscht."}],
+["zola","v","Arnim Zola","Hydras Wissenschaftler, später ein Computer.",{
+ cap1:"Red Skulls Assistent.",ac:"Am Ende von Staffel 1.",cap2:"Lebt als Bewusstsein auf Magnetbändern.",wi:"Hilft gegen Ultron."}],
+["zemo","v","Helmut Zemo","Der Mann, der die Avengers ohne Superkräfte zerlegt.",{
+ av2:"Seine Familie stirbt in Sokovia.",cap3:"Hetzt Tony und Steve aufeinander.",fws:"Bricht aus, hilft und landet im Raft."}],
+["ultron","v","Ultron","Tonys Friedensprogramm.",{
+ av2:"Entsteht und wird vernichtet.",smh:"Toomes' Leute erbeuten Ultron-Teile.",wi:"Gewinnt in einer Zeitlinie alle Infinity-Steine.",mom:"Auf Erde-838 dienen Ultron-Drohnen den Illuminati.",vq:"Kehrt zurück."}],
+["kangv","v","Kang und seine Varianten","Ein Mann aus dem 31. Jahrhundert in unzähligen Fassungen.",{
+ loki1:"Jener der bleibt.",ant3:"Kang der Eroberer und der Rat.",loki2:"Victor Timely.",dd:"Der Film hieß erst The Kang Dynasty. Doom hat Kang als Hauptgegner abgelöst."}],
+["kingpin","v","Wilson Fisk / Kingpin","Der Boss von New York in drei Fassungen.",{
+ dare03:"Michael Clarke Duncan.",dd1:"Vincent D'Onofrio.",itsv:"Zeichentrick-Fassung, baut den Teilchenbeschleuniger.",hawk:"Kehrt ins MCU zurück.",echo:"Überlebt Mayas Schuss.",dba1:"Wird Bürgermeister.",dba2:"Regiert mit Kriegsrecht."}],
+["bullseye","v","Bullseye","Der Mann, der nie danebenwirft.",{
+ dare03:"Colin Farrell.",dd1:"Staffel 3: FBI-Agent Dex Poindexter.",dba1:"Erschießt Foggy.",dba2:"Wieder dabei."}],
+["hand","v","Elektra & Die Hand","Der Ninja-Kult und die Frau, die er sich holt.",{
+ dare03:"Jennifer Garner. Im Ableger Elektra ist die Hand der Gegner.",dd1:"Élodie Yung als Elektra in Staffel 2.",ifist:"Madame Gao und die Hand.",def:"Elektra als Waffe der Hand.",dw:"Garners Elektra in der Leere."}],
+["goblin","v","Norman Osborn / Green Goblin","Spider-Mans Erzfeind.",{
+ sm1:"Willem Dafoe.",sm2:"Erscheint Harry im Spiegel.",sm3:"Harry als neuer Goblin.",asm2:"Norman stirbt, Harry wird zum Goblin.",itsv:"Monströse Fassung am Beschleuniger.",nwh:"Dafoe tötet Tante May.",yfn:"Norman als Peters Mentor."}],
+["ock","v","Doctor Octopus","Der Mann mit den vier Metallarmen.",{
+ sm2:"Alfred Molina.",itsv:"Olivia Octavius.",nwh:"Molina wird geheilt.",yfn:"Otto Octavius tritt auf."}],
+["trio","v","Sandman, Echse & Electro","Die übrigen Gäste aus No Way Home.",{
+ sm2:"Dr. Connors ist Peters Dozent.",sm3:"Sandman. Connors untersucht den Symbionten.",asm1:"Connors wird zur Echse.",asm2:"Electro.",ffh:"Mysterios Elementare spielen auf Sandman und Hydro-Man an.",nwh:"Alle drei werden geheilt."}],
+["spvill","v","Die Gegner von Hollands Spider-Man","Kleine Leute, die Tony Stark die Schuld geben.",{
+ smh:"Vulture, Shocker, Tinkerer und Mac Gargan.",itsv:"Scorpion und Tombstone als Kingpins Handlanger.",ffh:"Mysterio.",nwh:"Mysterios Video macht Peter zum Verdächtigen.",morb:"Vulture.",yfn:"Scorpion und Tombstone in jung.",bnd:"Scorpion und Tombstone."}],
+["sinister","v","Die Sinister Six, die nie kamen","Sony hat das Schurkenteam mehrfach angekündigt.",{
+ asm2:"Am Ende stehen Vulture-Flügel, Ock-Arme und der Rhino bereit.",smh:"Abspann: Gargan fragt Toomes nach Freunden.",ffh:"Furys Agent Dimitri trägt den Namen des Chameleon.",morb:"Abspann: Toomes will ein Team gründen.",kraven:"Rhino und Chameleon treten auf."}],
+["killmonger","v","Klaue & Killmonger","Der Vibranium-Dieb und der verlorene Prinz.",{
+ av2:"Klaue verkauft Ultron Vibranium und verliert einen Arm.",bp1:"Killmonger tötet Klaue und besteigt den Thron.",wi:"Killmonger rettet Tony Stark und hintergeht alle.",bp2:"Erscheint Shuri auf der Ahnenebene."}],
+["collector","v","Collector & Grandmaster","Zwei uralte Brüder mit seltsamen Hobbys.",{
+ thor2:"Abspann: Der Collector bekommt den Äther.",gotg1:"Erklärt die Infinity-Steine.",gotg2:"Der Grandmaster tanzt im Abspann.",thor3:"Der Grandmaster herrscht über Sakaar.",iw:"Thanos nimmt dem Collector den Realitätsstein ab.",wi:"Beide treten auf."}],
+["adam","v","Die Sovereign & Adam Warlock","Das goldene Volk und sein Geschöpf.",{
+ gotg2:"Abspann: Ayesha erschafft Adam.",gotg3:"Adam verletzt Rocket und wird am Ende ein Guardian."}],
+["cross","v","Darren Cross: Yellowjacket & M.O.D.O.K.","Hank Pyms Ziehsohn.",{
+ ant1:"Schrumpft als Yellowjacket ins Nichts.",modok:"Die Comicfassung der Figur in eigener Serie.",ant3:"Lebt im Quantenreich als Riesenkopf weiter."}],
+["agathav","v","Agatha Harkness","Die Hexe von nebenan.",{
+ wv:"Als Nachbarin Agnes.",agatha:"Ihre eigene Serie."}],
+["sharon","v","Sharon Carter / Power Broker","Peggys Nichte.",{
+ cap2:"Als Agentin 13 Steves Nachbarin.",cap3:"Hilft Steve und muss untertauchen.",fws:"Ist in Madripoor zum Power Broker geworden."}],
+["rumlow","v","Brock Rumlow / Crossbones","Hydras Mann im Einsatzteam.",{
+ cap2:"Der Kampf im Aufzug.",cap3:"Sprengt sich in Lagos in die Luft.",eg:"2012 im Aufzug mit dem Zepter."}],
+["batroc","v","Georges Batroc","Söldner mit Tritttechnik.",{
+ cap2:"Kapert die Lemurian Star.",fws:"Arbeitet für den Power Broker.",wi:"Kämpft gegen Captain Carter."}],
+["hammer","v","Justin Hammer & Hammer Industries","Tonys neidischer Konkurrent.",{
+ im2:"Baut mit Vanko Drohnen.",oneshots:"All Hail the King: sitzt im selben Gefängnis wie Trevor.",lc:"Hammer-Waffen in Harlem."}],
+["creel","v","Carl „Crusher“ Creel","Der Absorbing Man.",{
+ aos:"Gegner in Staffel 2.",dd1:"Matts Vater boxte gegen ihn."}],
+["magneto","v","Magneto","Erik Lehnsherr, Freund und Feind von Charles.",{
+ x1:"Ian McKellen.",x2:"Verbündet sich kurz mit den X-Men.",x3:"Führt die Bruderschaft.",xfc:"Michael Fassbender als junger Erik.",wolv:"Abspann: warnt Logan.",dofp:"Beide Fassungen.",xapo:"Reiter von Apocalypse.",xdp:"Führt Genosha.",xm97:"Erbt die Schule.",dd:"McKellen kehrt zurück."}],
+["stryker","v","William Stryker & Waffe X","Das Programm, das Wolverine erschuf.",{
+ x2:"Brian Cox.",xow:"Danny Huston.",dofp:"Als junger Offizier 1973.",xapo:"Hält Logan am Alkali Lake.",logan:"Die Nachfolger züchten X-23."}],
+["sentinels","v","Sentinels","Roboter, die Mutanten jagen.",{
+ x3:"Im Trainingsraum.",dofp:"Trasks Programm.",gifted:"Die Behörde Sentinel Services.",xm97:"Zerstören Genosha."}],
+["voidx","v","Die Vergessenen der Leere","Fox-Figuren, die Deadpool & Wolverine noch einmal auftreten lässt.",{
+ x1:"Sabretooth und Toad.",x2:"Pyro und Lady Deathstrike.",x3:"Juggernaut und Callisto.",xow:"Blob.",xfc:"Azazel.",xapo:"Psylocke.",dp2:"Juggernaut.",dw:"Alle zusammen in Cassandra Novas Armee."}],
+["galactus","v","Galactus & der Silver Surfer","Der Weltenverschlinger und sein Herold.",{
+ f4b:"Norrin Radd. Galactus ist nur eine Wolke.",ff:"Shalla-Bal. Galactus in voller Größe."}],
+// ----- weitere Artefakte -----
+["gauntlet","a","Der Infinity-Handschuh","Die Fassung für alle sechs Steine.",{
+ thor:"Ein Handschuh liegt in Odins Schatzkammer.",av2:"Abspann: Thanos holt den echten.",thor3:"Hela nennt Odins Exemplar eine Fälschung.",iw:"Vom Zwerg Eitri in Nidavellir geschmiedet.",eg:"Tony baut einen eigenen. Thanos hat die Steine vernichtet."}],
+["vault","a","Odins Schatzkammer","Asgards Lager gefährlicher Dinge.",{
+ thor:"Die Urne der Eisriesen und die Ewige Flamme.",av1:"Der Tesserakt wandert hinein.",thor3:"Hela weckt mit der Ewigen Flamme ihre Armee. Loki nimmt den Tesserakt."}],
+["extremis","a","Extremis","Das Virus, das Körper heilt und sprengt.",{
+ im3:"Killians Soldaten.",aos:"Bestandteil des Centipede-Serums."}],
+["herb","a","Das herzförmige Kraut","Die Pflanze, die den Black Panther macht.",{
+ bp1:"Killmonger lässt alle Pflanzen verbrennen.",bp2:"Shuri stellt es künstlich her."}],
+["mix","a","Awesome Mix","Peter Quills Kassetten.",{
+ gotg1:"Vol. 1 im Walkman.",gotg2:"Vol. 2. Ego zerdrückt den Walkman, Quill bekommt einen Zune.",iw:"Der Zune läuft.",eg:"2014 tanzt Quill auf Morag.",ghs:"Weihnachtslieder.",gotg3:"Der Zune geht an Rocket."}],
+["cerebro","a","Cerebro","Xaviers Maschine zum Aufspüren von Mutanten.",{
+ x1:"Mystique sabotiert sie.",x2:"Stryker baut eine Kopie.",xfc:"Der erste Prototyp.",dofp:"Der junge Charles muss sie wieder benutzen.",xapo:"Apocalypse kapert sie.",xdp:"Im Einsatz."}],
+// ----- weitere Handlung & Orte -----
+["asgard","p","Asgard & sein Volk","Von der goldenen Stadt zum Fischerdorf in Norwegen.",{
+ cap1:"Der Tesserakt lag in Tønsberg versteckt.",thor:"Odin, Frigga, Heimdall, Sif und die tapferen Drei.",thor2:"Angriff der Dunkelelfen.",aos:"Lady Sif kommt zweimal vorbei.",thor3:"Asgard wird zerstört.",iw:"Thanos tötet die halbe Besatzung und Heimdall.",eg:"New Asgard entsteht in Tønsberg, Valkyrie wird König.",loki1:"Sif in einer Zeitschleife.",thor4:"New Asgard als Touristenort.",marvels:"Valkyrie nimmt die Skrull-Flüchtlinge auf."}],
+["redroom","p","Der Rote Raum","Das sowjetische Programm, das Black Widows ausbildet.",{
+ ac:"1946: Dottie Underwood.",av2:"Natashas Erinnerungen.",bw:"Dreykov und die fliegende Festung.",hawk:"Yelena befreit weitere Widows.",tb:"Yelenas Kindheit im Programm."}],
+["damage","p","Damage Control","Die Aufräumbehörde wird zur Polizei für Superwesen.",{
+ smh:"Von Tony und der Regierung gegründet.",nwh:"Agent Cleary verhört Peter.",msm:"Jagt Kamala.",shulk:"Betreibt das Gefängnis, in dem Blonsky sitzt.",wm:"Jagt Menschen mit Kräften."}],
+["tower","p","Avengers Tower & Hauptquartier","Wem gehört das Haus der Avengers?",{
+ av1:"Stark Tower. Nach der Schlacht steht nur noch das A.",av2:"Sitz des Teams, danach Umzug aufs Land.",cap3:"Das neue Hauptquartier.",smh:"Tony verkauft den Turm.",ffh:"Der Turm wird umgebaut.",eg:"Thanos zerstört das Hauptquartier.",tb:"Der Turm gehört Valentina und wird Sitz der New Avengers."}],
+["raft","p","Das Raft","Das Unterwassergefängnis für Superwesen.",{
+ cap3:"Steves Team sitzt dort ein.",jj:"Staffel 3: Trish Walker wird eingeliefert.",fws:"Zemo landet dort."}],
+["darkforce","p","Darkforce & die Dunkle Dimension","Dunkle Materie aus einer anderen Ebene, vor allem im Fernsehen.",{
+ aos:"Marcus Daniels nutzt Darkforce.",ac:"Staffel 2: „Zero Matter“.",ds1:"Dormammus Dunkle Dimension, für viele Fans dieselbe Quelle.",cd:"Tyrones Mantel führt in die Darkforce-Dimension.",run:"Staffel 3: Reise in die Dunkle Dimension.",mom:"Abspann: Clea holt Strange dorthin."}],
+["gods","p","Götter & Pantheons","Asgard ist nicht der einzige Götterhimmel.",{
+ thor:"Die Asen.",bp1:"Wakanda verehrt Bast.",mk:"Die ägyptische Enneade, Khonshu und Ammit.",thor4:"Omnipotence City mit Zeus und Bast. Abspann: Hercules.",bp2:"Namor wird als K'uk'ulkan verehrt.",mz:"Blade dient Khonshu als Avatar."}],
+["ben","p","Große Macht, große Verantwortung","Der Satz und der Verlust, der jeden Spider-Man prägt.",{
+ sm1:"Onkel Ben stirbt.",asm1:"Onkel Ben stirbt erneut.",cap3:"Peter umschreibt den Satz, ohne Ben zu nennen.",itsv:"Miles verliert Onkel Aaron.",nwh:"Tante May spricht den Satz und stirbt.",atsv:"Solche Verluste heißen hier Kanon-Ereignisse.",mweb:"Ben Parker als junger Sanitäter."}],
+["howling","p","Howling Commandos","Steves Einheit aus dem Krieg.",{
+ cap1:"Die Truppe um Dum Dum Dugan.",ac:"Dugan hilft Peggy.",aos:"Agent Triplett ist Enkel eines Commandos."}],
+["watchers","p","Die Watcher","Sie beobachten und greifen nicht ein. Meistens.",{
+ gotg2:"Stan Lee erzählt ihnen von seinen Auftritten.",wi:"Uatu ist der Erzähler."}]
+];
+
+// Erscheinungen je Faden: l Name, q Suchbegriff für Filmbilder, f freies Foto, c Urheber, li Lizenz, u Quelle, a Darsteller, v Sprechrolle, k Art des Fotos
+const LOOKS=/*LOOKS*/{"tony":[{"l":"Tony Stark","q":"Tony Stark MCU","f":"img/robert-downey-jr.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:RobertDowneyJr-byPhilipRomano7_(cropped).jpg","a":"Robert Downey Jr."},{"l":"Iron-Man-Rüstung","q":"Iron Man armor Mark 85 MCU","f":"img/x-iron-man-cosplay.jpg","c":"Altan Dilan","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Iron_Man_Cosplay_-_MCM_Comic_Con_2016_(27398644375).jpg","k":"Cosplay"},{"l":"Hulkbuster","q":"Hulkbuster Age of Ultron"}],"steve":[{"l":"Steve Rogers","q":"Steve Rogers MCU","f":"img/chris-evans-actor.jpg","c":"Sara Komatsu","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Chris_Evans_at_the_2025_Toronto_International_Film_Festival_(cropped).jpg","a":"Chris Evans"},{"l":"Captain America in Uniform","q":"Captain America suit Endgame","f":"img/x-captain-america-cosplay.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Captain_America_at_GalaxyCon_Richmond_2020_(49666813952).jpg","k":"Cosplay"},{"l":"Nomad in Infinity War","q":"Steve Rogers Infinity War beard Nomad"},{"l":"Der alte Steve","q":"old Steve Rogers Endgame bench"}],"peggy":[{"l":"Peggy Carter","q":"Peggy Carter MCU","f":"img/hayley-atwell.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Hayley_Atwell_2025_(crop).jpg","a":"Hayley Atwell"},{"l":"Captain Carter (What If, Erde-838)","q":"Captain Carter Multiverse of Madness What If"}],"thor":[{"l":"Thor","q":"Thor MCU","f":"img/chris-hemsworth.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Chris_Hemsworth_-_Crime_101.jpg","a":"Chris Hemsworth"},{"l":"In Rüstung mit Hammer","q":"Thor armor Mjolnir MCU","f":"img/x-thor-cosplay-marvel.jpg","c":"Miguel Discart","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Thor_(Marvel)_at_Made_in_Asia_2022_(52104540946).jpg","k":"Cosplay"},{"l":"Gladiator in Ragnarok","q":"Thor Ragnarok gladiator short hair"},{"l":"Thor in Endgame","q":"Thor Endgame New Asgard"},{"l":"Mighty Thor (Jane Foster)","q":"Mighty Thor Jane Foster Love and Thunder","f":"img/natalie-portman.jpg","c":"Colleen Sturtevant","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:NataliePortman.jpg","a":"Natalie Portman"}],"loki":[{"l":"Loki","q":"Loki MCU Tom Hiddleston","f":"img/tom-hiddleston.jpg","c":"Kevin Payravi","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Tom_Hiddleston_at_the_2024_Toronto_International_Film_Festival_(cropped).jpg","a":"Tom Hiddleston"},{"l":"Mit Hörnerhelm","q":"Loki horned helmet Avengers 2012","f":"img/x-loki-cosplay.jpg","c":"William Tung from USA","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:WonderCon_2015_-_Loki_cosplay_-_without_background.jpg","k":"Cosplay"},{"l":"Sylvie","q":"Sylvie Loki series","f":"img/sophia-di-martino.jpg","c":"Raph_PH","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:ARealPainBFILFF131024_(43_of_138)_(54063996577)_(cropped).jpg","a":"Sophia Di Martino"},{"l":"Classic Loki","q":"Classic Loki Richard E Grant","f":"img/richard-e-grant.jpg","c":"Greg2600","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Richard_E._Grant_2018_(cropped).jpg","a":"Richard E. Grant"},{"l":"Boastful Loki","q":"Boastful Loki"},{"l":"Kid Loki","q":"Kid Loki series"},{"l":"Alligator Loki","q":"Alligator Loki"},{"l":"President Loki","q":"President Loki"},{"l":"Gott der Geschichten","q":"Loki God of Stories season 2 finale"}],"hulkc":[{"l":"Bruce Banner","q":"Bruce Banner Mark Ruffalo MCU","f":"img/mark-ruffalo.jpg","c":"Gage Skidmore from Peoria, AZ, United States of America","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Mark_Ruffalo_(36201774756)_(cropped).jpg","a":"Mark Ruffalo"},{"l":"Bruce Banner (2008)","q":"Bruce Banner Edward Norton Incredible Hulk","f":"img/edward-norton.jpg","c":"Max Surprenant","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Ed_Norton_and_Shauna_Robertson_TIFF_2025_(cropped).jpg","a":"Edward Norton"},{"l":"Bruce Banner (2003)","q":"Hulk 2003 Eric Bana","f":"img/eric-bana.jpg","c":"David Shankbone","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Eric_Bana_at_the_2009_Tribeca_Film_Festival.jpg","a":"Eric Bana"},{"l":"Hulk","q":"Hulk MCU Avengers"},{"l":"Smart Hulk","q":"Smart Hulk Endgame"},{"l":"Gladiator-Hulk","q":"Hulk Ragnarok gladiator armor"}],"ross":[{"l":"Ross (2008 bis 2021)","q":"Thaddeus Ross William Hurt","f":"img/william-hurt.jpg","c":"GabboT","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:History_of_Violence_002_(7271227040).jpg","a":"William Hurt"},{"l":"Präsident Ross","q":"Thaddeus Ross Harrison Ford Brave New World","f":"img/harrison-ford.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Harrison_Ford_-_Televerse_2025-03.jpg","a":"Harrison Ford"},{"l":"Red Hulk","q":"Red Hulk Brave New World"}],"nat":[{"l":"Natasha Romanoff","q":"Natasha Romanoff MCU","f":"img/scarlett-johansson.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Scarlett_Johansson-8588.jpg","a":"Scarlett Johansson"},{"l":"Im Kampfanzug","q":"Black Widow suit MCU","f":"img/x-black-widow-cosplay-marvel.jpg","c":"William Tung","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:WonderCon_2017_-_Black_Widow_Cosplay.jpg","k":"Cosplay"},{"l":"Weißer Anzug","q":"Black Widow white suit 2021"}],"yelena":[{"l":"Yelena Belova","q":"Yelena Belova MCU","f":"img/florence-pugh.jpg","c":"Marlene Landu","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Florence_Pugh_2026.jpg","a":"Florence Pugh"},{"l":"Im Einsatz","q":"Yelena Belova Thunderbolts suit"}],"clint":[{"l":"Clint Barton","q":"Clint Barton MCU","f":"img/jeremy-renner.jpg","c":"Max Surprenant","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Jeremy_Renner_at_TIFF_2025_(cropped).jpg","a":"Jeremy Renner"},{"l":"Hawkeye-Kostüm","q":"Hawkeye suit MCU","f":"img/x-hawkeye-cosplay-marvel.jpg","c":"Dan Catchpole","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Classic_Hawkeye_at_MegaCon_2009.jpg","k":"Cosplay im Comic-Kostüm"},{"l":"Ronin","q":"Ronin Hawkeye Endgame"}],"fury":[{"l":"Nick Fury","q":"Nick Fury MCU","f":"img/samuel-l-jackson.jpg","c":"Philip Romano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:SamuelLJackson.jpg","a":"Samuel L. Jackson"},{"l":"Fury 1995","q":"young Nick Fury Captain Marvel 1995"}],"bucky":[{"l":"Bucky Barnes","q":"Bucky Barnes MCU","f":"img/sebastian-stan.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Sebastian_Stan-64526.jpg","a":"Sebastian Stan"},{"l":"Winter Soldier mit Maske","q":"Winter Soldier mask Captain America","f":"img/x-winter-soldier-cosplay.jpg","c":"RyC - Behind The Lens from San Francisco, United States of America","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Winter_soldier_cosplay_(14049807630).jpg","k":"Cosplay"},{"l":"Weißer Wolf","q":"Bucky White Wolf Wakanda"}],"sam":[{"l":"Sam Wilson","q":"Sam Wilson MCU","f":"img/anthony-mackie.jpg","c":"Quejaytee","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Anthony_Mackie_on_the_Green_Carpet_at_the_2025_Zurich_Film_Festival_03_(cropped).jpg","a":"Anthony Mackie"},{"l":"Falcon","q":"Falcon suit wings MCU","f":"img/x-falcon-cosplay-marvel.jpg","c":"Pat Loika","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:C2E2_2013_-_The_Falcon_(8689160144).jpg","k":"Cosplay im Comic-Kostüm"},{"l":"Captain America","q":"Sam Wilson Captain America suit Brave New World"}],"wanda":[{"l":"Wanda Maximoff","q":"Wanda Maximoff MCU","f":"img/elizabeth-olsen.png","c":"JoshPopov","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:ElizabethOlsen-TIFF2025-02_(cropped).png","a":"Elizabeth Olsen"},{"l":"Scarlet Witch mit Krone","q":"Scarlet Witch WandaVision costume crown","f":"img/x-scarlet-witch-cosplay.jpg","c":"Romer Jed Medina from Newark, NJ, United States","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Scarlet_Witch_at_the_2021_New_York_Comic_Con_(51573810854).jpg","k":"Cosplay"},{"l":"In Age of Ultron","q":"Wanda Maximoff Age of Ultron"},{"l":"Sitcom-Wanda","q":"WandaVision sitcom Wanda 1950s"},{"l":"Halloween-Kostüm","q":"WandaVision Halloween costume Wanda"},{"l":"Wanda der Erde-838","q":"Wanda Earth-838 Multiverse of Madness"}],"vision":[{"l":"Vision","q":"Vision MCU","f":"img/paul-bettany.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:PaulBettany-byPhilipRomano.jpg","a":"Paul Bettany"},{"l":"Vision im Kostüm","q":"Vision Avengers Age of Ultron","f":"img/x-vision-cosplay-marvel.jpg","c":"Terry Robinson","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Dragon_Con_2015_-_Vision_(21914705011).jpg","k":"Cosplay"},{"l":"Der weiße Vision","q":"White Vision WandaVision"},{"l":"Sitcom-Vision","q":"WandaVision Vision human form"}],"peter":[{"l":"Peter Parker","q":"Peter Parker Tom Holland MCU","f":"img/tom-holland.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:TomHolland-byPhilipRomano.jpg","a":"Tom Holland"},{"l":"Spider-Man-Anzug","q":"Spider-Man suit Homecoming","f":"img/x-spider-man-cosplay.jpg","c":"CaliBen","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Asia_Comic_Expo_2023_-_Spider-Man_cosplay_1.jpg","k":"Cosplay-Gruppe"},{"l":"Iron Spider","q":"Iron Spider suit Infinity War"},{"l":"Schwarz-roter Anzug","q":"Spider-Man Far From Home upgraded suit"},{"l":"Selbstgenähter Anzug","q":"Spider-Man No Way Home final suit"}],"spideys":[{"l":"Peter Parker (Raimi)","q":"Tobey Maguire Spider-Man","f":"img/tobey-maguire.jpg","c":"gdcgraphics","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Tobey_Maguire_2014.jpg","a":"Tobey Maguire"},{"l":"Peter Parker (Webb)","q":"Andrew Garfield Spider-Man","f":"img/andrew-garfield.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Andrew_Garfield_at_the_2026_New_York_Film_Festival-18.jpg","a":"Andrew Garfield"},{"l":"Raimi-Anzug","q":"Spider-Man 2002 suit"},{"l":"Schwarzer Symbiont-Anzug","q":"Spider-Man 3 black suit"},{"l":"Amazing-Anzug","q":"Amazing Spider-Man 2 suit"}],"miles":[{"l":"Miles Morales","q":"Miles Morales Spider-Verse","f":"img/shameik-moore.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Shameik_Moore_Photo_Op_GalaxyCon_Raleigh_2023.jpg","a":"Shameik Moore","v":1},{"l":"Miles im Anzug","q":"Miles Morales suit Into the Spider-Verse","f":"img/x-miles-morales-cosplay.jpg","c":"Artistosteles","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_de_Miles_Morales_en_Madrid_Comic_Pop_2021.jpg","k":"Cosplay"},{"l":"Peter B. Parker","q":"Peter B. Parker Spider-Verse","f":"img/jake-johnson.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Jake_Johnson_-_Maximum_Pleasure_Guaranteed.jpg","a":"Jake Johnson","v":1},{"l":"Miguel O'Hara","q":"Miguel O'Hara Spider-Man 2099 Across the Spider-Verse","f":"img/oscar-isaac.jpg","c":"LucaFazPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Oscar_Isaac_at_82nd_Venice_International_Film_Festival-1_(cropped).jpg","a":"Oscar Isaac","v":1},{"l":"Spider-Noir","q":"Spider-Noir series Nicolas Cage","f":"img/nicolas-cage.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Nicolas_Cage_at_Los_Angeles_Comic_Con_2026-2.jpg","a":"Nicolas Cage"},{"l":"Miles von Erde-42","q":"Miles G. Morales Prowler Earth-42"}],"strange":[{"l":"Stephen Strange","q":"Doctor Strange MCU","f":"img/benedict-cumberbatch.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Benedict_Cumberbatch-67555.jpg","a":"Benedict Cumberbatch"},{"l":"Mit Umhang","q":"Doctor Strange Cloak of Levitation","f":"img/x-doctor-strange-cosplay.jpg","c":"Theme Park Tourist","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Dr._Strange_(30175130414).jpg","k":"Cosplay"},{"l":"Sinister Strange","q":"Sinister Strange Multiverse of Madness"},{"l":"Defender Strange","q":"Defender Strange Multiverse of Madness"},{"l":"Zombie-Strange","q":"Dead Strange zombie Multiverse of Madness"},{"l":"Strange Supreme","q":"Strange Supreme What If"}],"wong":[{"l":"Wong","q":"Wong MCU","f":"img/benedict-wong.jpg","c":"Peter Guenzel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Benedict_Wong_2023_by_Peter_Guenzel_02.jpg","a":"Benedict Wong"}],"bp":[{"l":"T'Challa","q":"T'Challa Black Panther MCU","f":"img/chadwick-boseman.jpg","c":"Gage Skidmore","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Chadwick_Boseman_by_Gage_Skidmore_July_2017_(cropped).jpg","a":"Chadwick Boseman"},{"l":"Black-Panther-Anzug","q":"Black Panther suit 2018","f":"img/x-black-panther-cosplay-marvel.jpg","c":"tinyfroglet","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Black_Panther_cosplay.jpg","k":"Cosplay"},{"l":"Shuri","q":"Shuri Black Panther Wakanda Forever suit","f":"img/letitia-wright.jpg","c":"Duk3L1xon","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Letitia_Wright_at_2025_SXSW_London_(cropped).jpg","a":"Letitia Wright"},{"l":"Okoye","q":"Okoye Dora Milaje","f":"img/danai-gurira.jpg","c":"Gage Skidmore","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Danai_Gurira_2024_(cropped).jpg","a":"Danai Gurira"},{"l":"Namor","q":"Namor Wakanda Forever","f":"img/tenoch-huerta.jpg","c":"Kevin Payravi","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Tenoch_Huerta_2024.jpg","a":"Tenoch Huerta"}],"guardians":[{"l":"Peter Quill","q":"Star-Lord MCU","f":"img/chris-pratt.jpg","c":"Dick Thomas Johnson from Tokyo, Japan","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Chris_Pratt_Jurassic_World_Fallen_Kingdom_Japan_Premiere_Red_Carpet_(3x4_cropped).jpg","a":"Chris Pratt"},{"l":"Star-Lord mit Maske","q":"Star-Lord mask helmet","f":"img/x-star-lord-cosplay.jpg","c":"Stéphane Gallay from Onex, Switzerland","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Japan_Expo_2017_-_Star-Lord_cosplay_(35840454255).jpg","k":"Cosplay"},{"l":"Drax","q":"Drax MCU","f":"img/dave-bautista.jpg","c":"Super Festivals","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Dave_Bautista_Photo_Op_GalaxyCon_Minneapolis_2019.jpg","a":"Dave Bautista"},{"l":"Mantis","q":"Mantis MCU","f":"img/pom-klementieff.jpg","c":"Gabriel Hutchinson","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Pom_Klementieff_at_the_2025_Cannes_Film_Festival_02.jpg","a":"Pom Klementieff"},{"l":"Rocket","q":"Rocket Raccoon MCU","f":"img/bradley-cooper.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Bradley_Cooper_Is_This_Thing_On-41_(cropped).jpg","a":"Bradley Cooper","v":1},{"l":"Groot","q":"Groot MCU","f":"img/vin-diesel.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Vin_Diesel_by_Gage_Skidmore_2.jpg","a":"Vin Diesel","v":1},{"l":"Baby Groot","q":"Baby Groot","f":"img/x-groot-cosplay.jpg","c":"Michael Ocampo from United States","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:FanimeCon_2015_-_Groot_cosplay_(18145141961).jpg","k":"Cosplay, ausgewachsener Groot"}],"scott":[{"l":"Scott Lang","q":"Scott Lang MCU","f":"img/paul-rudd.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Paul_Rudd_at_the_2026_New_York_Film_Festival-003.jpg","a":"Paul Rudd"},{"l":"Ant-Man-Anzug","q":"Ant-Man suit helmet MCU","f":"img/x-ant-man-cosplay.jpg","c":"William Tung","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Ant-Man_cosplay.jpg","k":"Cosplay"},{"l":"Hope van Dyne","q":"Wasp Hope van Dyne MCU","f":"img/evangeline-lilly.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Evangeline_Lilly_(53390939662).jpg","a":"Evangeline Lilly"},{"l":"Hank Pym","q":"Hank Pym MCU","f":"img/michael-douglas.jpg","c":"User:Janbery","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:59th_Karlovy_Vary_International_Film_Festival,_Michael_Douglas_09(cropped).jpg","a":"Michael Douglas"},{"l":"Cassie Lang","q":"Cassie Lang Quantumania suit","f":"img/kathryn-newton.jpg","c":"4DX","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Kathryn_Newton_4DX_2023.jpg","a":"Kathryn Newton"}],"carol":[{"l":"Carol Danvers","q":"Carol Danvers MCU","f":"img/brie-larson.jpg","c":"The CW Network","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Brie_Larson_at_29th_Critics%27_Choice_Awards_(brightened).jpg","a":"Brie Larson"},{"l":"Captain-Marvel-Anzug","q":"Captain Marvel suit helmet","f":"img/x-captain-marvel-cosplay.jpg","c":"Miguel Discart","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Captain_Marvel_at_Brussels_Comic_Con_2019_(47300448171).jpg","k":"Cosplay"},{"l":"Kree-Uniform","q":"Captain Marvel Kree Starforce green suit"}],"matt":[{"l":"Matt Murdock","q":"Matt Murdock Charlie Cox","f":"img/charlie-cox.jpg","c":"JaceMerlyn","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Charlie_Cox_at_MCM_Brum_26_04.jpg","a":"Charlie Cox"},{"l":"Daredevil in Rot","q":"Daredevil red suit Netflix","f":"img/x-daredevil-cosplay.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Daredevil_at_Florida_Supercon_2013_(9361340682).jpg","k":"Cosplay"},{"l":"Daredevil (2003)","q":"Daredevil 2003 Ben Affleck","f":"img/ben-affleck.jpg","c":"LucaFazPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Ben_Affleck_at_83rd_Venice_International_Film_Festival-1_(cropped).jpg","a":"Ben Affleck"},{"l":"Schwarzer Anzug","q":"Daredevil black mask season 1"},{"l":"Gelb-roter Anzug","q":"Daredevil yellow suit She-Hulk"}],"frank":[{"l":"Frank Castle","q":"Punisher Jon Bernthal","f":"img/jon-bernthal.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:JonBernthal-byPhilipRomano2.jpg","a":"Jon Bernthal"},{"l":"Punisher (2004)","q":"Punisher 2004 Thomas Jane","f":"img/thomas-jane.jpg","c":"Toglenn","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Thomas_Jane_2019_by_Glenn_Francis.jpg","a":"Thomas Jane"},{"l":"Punisher: War Zone","q":"Punisher War Zone Ray Stevenson","f":"img/ray-stevenson.jpg","c":"Mingle Media TV","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Ray_Stevenson_March_18,_2014_(cropped).jpg","a":"Ray Stevenson"},{"l":"Totenkopf-Weste","q":"Punisher skull vest Netflix","f":"img/x-punisher-cosplay.jpg","c":"William Tung","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:WonderCon_2019_-_The_Punisher_Cosplay.jpg","k":"Cosplay"}],"defs":[{"l":"Jessica Jones","q":"Jessica Jones Netflix","f":"img/krysten-ritter.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Krysten_Ritter_-_LA_Times_Festival_of_Books_2025.jpg","a":"Krysten Ritter"},{"l":"Luke Cage","q":"Luke Cage Netflix","f":"img/mike-colter.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Mike_Colter_-_Los_Angeles_Comic_Con_2025.jpg","a":"Mike Colter"},{"l":"Danny Rand","q":"Iron Fist Netflix Danny Rand","f":"img/finn-jones.jpg","c":"Miguel Discart","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Finn_Jones_(53318496987).jpg","a":"Finn Jones"}],"trevor":[{"l":"Trevor Slattery","q":"Trevor Slattery","f":"img/ben-kingsley.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Ben_Kingsley_by_Gage_Skidmore.jpg","a":"Ben Kingsley"},{"l":"Als „Mandarin“","q":"Mandarin Iron Man 3 Ben Kingsley"}],"blade":[{"l":"Blade (1998)","q":"Blade Wesley Snipes","f":"img/wesley-snipes.jpg","c":"Gage Skidmore from Peoria, AZ, United States of America","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Wesley_Snipes_(41969097750)_(cropped).jpg","a":"Wesley Snipes"},{"l":"Blade (MCU, geplant)","q":"Blade Mahershala Ali","f":"img/mahershala-ali.jpg","c":"Gabriel Hutchinson","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Mahershala_Ali_at_TIFF_2026_01.jpg","a":"Mahershala Ali"},{"l":"Blade Knight","q":"Blade Knight Marvel Zombies"}],"f4":[{"l":"Reed Richards","q":"Reed Richards First Steps","f":"img/pedro-pascal.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Pedro_Pascal_at_the_2026_New_York_Film_Festival-042.jpg","a":"Pedro Pascal"},{"l":"Sue Storm","q":"Sue Storm First Steps","f":"img/vanessa-kirby.jpg","c":"Jay Dixit","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Vanessa_Kirby_at_the_2024_Toronto_International_Film_Festival_08_(Cropped).jpg","a":"Vanessa Kirby"},{"l":"Johnny Storm","q":"Johnny Storm First Steps Human Torch","f":"img/joseph-quinn.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Joseph_Quinn_by_Gage_Skidmore.jpg","a":"Joseph Quinn"},{"l":"Ben Grimm","q":"The Thing First Steps","f":"img/ebon-moss-bachrach.jpg","c":"Amy Hecht","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Ebon_Moss-Bachrach_at_the_2026_New_York_Film_Festival_(2)_(cropped).jpg","a":"Ebon Moss-Bachrach"},{"l":"Reed von Erde-838","q":"Reed Richards John Krasinski Multiverse of Madness","f":"img/john-krasinski.jpg","c":"Prime Video AU & NZ","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:John_Krasinski_2022.jpg","a":"John Krasinski"},{"l":"Team von 2005","q":"Fantastic Four 2005 cast"},{"l":"Team von 2015","q":"Fantastic Four 2015 cast"}],"wolverine":[{"l":"Logan","q":"Wolverine Hugh Jackman","f":"img/hugh-jackman.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Hugh_Jackman_Is_This_Thing_On-68_(cropped).jpg","a":"Hugh Jackman"},{"l":"Gelb-blauer Anzug mit Maske","q":"Wolverine yellow suit mask Deadpool Wolverine","f":"img/x-wolverine-cosplay.jpg","c":"Igordebraga","li":"CC0","u":"https://commons.wikimedia.org/wiki/File:Deadpool_Wolverine_cosplay.jpg","k":"Cosplay"},{"l":"Der alte Logan","q":"Logan 2017 old Logan"},{"l":"Varianten in der Leere","q":"Deadpool Wolverine variants Cavillerine"}],"deadpool":[{"l":"Wade Wilson","q":"Wade Wilson Deadpool unmasked","f":"img/ryan-reynolds.jpg","c":"Dick Thomas Johnson from Tokyo, Japan","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Deadpool_2_Japan_Premiere_Red_Carpet_Ryan_Reynolds_(cropped).jpg","a":"Ryan Reynolds"},{"l":"Deadpool mit Maske","q":"Deadpool suit movie","f":"img/x-deadpool-cosplay.jpg","c":"Miguel Discart","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Lady_Deadpool_and_Deadpool_at_Made_in_Asia_2018_(41073218855).jpg","k":"Cosplay, mit Lady Deadpool"},{"l":"Deadpool von 2009","q":"Deadpool X-Men Origins Wolverine Weapon XI"},{"l":"Deadpool-Corps","q":"Deadpool Corps Lady Deadpool Dogpool Nicepool"}],"xmen":[{"l":"Charles Xavier","q":"Professor X Patrick Stewart","f":"img/patrick-stewart.jpg","c":"Kingkongphoto & www.celebrity-photos.com from Laurel Maryland, USA","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Patrick_Stewart_1999_(retouch).jpg","a":"Patrick Stewart"},{"l":"Der junge Xavier","q":"Professor X James McAvoy","f":"img/james-mcavoy.jpg","c":"Kacy Bao","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:James_McAvoy_at_2026_Toronto_Film_Festival_(cropped).jpg","a":"James McAvoy"},{"l":"Cyclops","q":"Cyclops James Marsden","f":"img/james-marsden.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:James_Marsden_by_Gage_Skidmore.jpg","a":"James Marsden"},{"l":"Storm","q":"Storm Halle Berry X-Men","f":"img/halle-berry.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Halle_Berry-1910.jpg","a":"Halle Berry"},{"l":"Xavier von Erde-838","q":"Professor X Earth-838 yellow hover chair"},{"l":"X-Men '97","q":"X-Men 97 team"}],"rhodey":[{"l":"James Rhodes","q":"James Rhodes Don Cheadle MCU","f":"img/don-cheadle.jpg","c":"PhilipRomanoPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:DonCheadle-byPhilipRomano2.jpg","a":"Don Cheadle"},{"l":"Rhodes (2008)","q":"James Rhodes Terrence Howard Iron Man","f":"img/terrence-howard.jpg","c":"Frantogian","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Terrence_Howard_-_Monte-Carlo.jpg","a":"Terrence Howard"},{"l":"War-Machine-Rüstung","q":"War Machine armor MCU","f":"img/x-war-machine-cosplay.jpg","c":"Miguel Discart","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_War_Machine_at_Japan_Expo_2016_(28111856550).jpg","k":"Cosplay"},{"l":"Iron Patriot","q":"Iron Patriot Iron Man 3"}],"coulson":[{"l":"Phil Coulson","q":"Phil Coulson","f":"img/clark-gregg.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:ClarkGregg-byPhilipRomano.jpg","a":"Clark Gregg"}],"hill":[{"l":"Maria Hill","q":"Maria Hill MCU","f":"img/cobie-smulders.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Cobie_Smulders_by_Gage_Skidmore_3.jpg","a":"Cobie Smulders"}],"pepper":[{"l":"Pepper Potts","q":"Pepper Potts MCU","f":"img/gwyneth-paltrow.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Gwyneth_Paltrow_-_Marty_Supreme.jpg","a":"Gwyneth Paltrow"},{"l":"Happy Hogan","q":"Happy Hogan MCU","f":"img/jon-favreau.jpg","c":"Eva Rinaldi (Uploader: Musa Raza )","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Jon_Favreau_2016.jpeg","a":"Jon Favreau"},{"l":"Rescue-Rüstung","q":"Pepper Potts Rescue armor Endgame"}],"jane":[{"l":"Jane Foster","q":"Jane Foster MCU","f":"img/natalie-portman.jpg","c":"Colleen Sturtevant","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:NataliePortman.jpg","a":"Natalie Portman"},{"l":"Darcy Lewis","q":"Darcy Lewis MCU","f":"img/kat-dennings.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Kat_Dennings_-_The_40-Year-Old-Virgin.jpg","a":"Kat Dennings"},{"l":"Erik Selvig","q":"Erik Selvig MCU","f":"img/stellan-skarsgard.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Stellan_Skarsg%C3%A5rd-9707_(cropped).jpg","a":"Stellan Skarsgård"},{"l":"Mighty Thor","q":"Mighty Thor Jane Foster"}],"howard":[{"l":"Howard Stark (jung)","q":"Howard Stark Dominic Cooper","f":"img/dominic-cooper.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Dominic_Cooper_by_Gage_Skidmore.jpg","a":"Dominic Cooper"},{"l":"Howard Stark (älter)","q":"Howard Stark John Slattery","f":"img/john-slattery.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:JohnSlattery-byPhilipRomano.jpg","a":"John Slattery"},{"l":"Edwin Jarvis","q":"Edwin Jarvis Agent Carter","f":"img/james-d-arcy.jpg","c":"gdcgraphics","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:James_DArcy_(8008892914).jpg","a":"James D'Arcy"}],"rambeau":[{"l":"Monica Rambeau","q":"Monica Rambeau MCU","f":"img/teyonah-parris.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:TeyonahParris-byPhilipRomano.jpg","a":"Teyonah Parris"},{"l":"Maria Rambeau","q":"Maria Rambeau Captain Marvel Binary","f":"img/lashana-lynch.jpg","c":"MTV International","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Lashana_Lynch_interview_2019.jpg","a":"Lashana Lynch"}],"shangchi":[{"l":"Shang-Chi","q":"Shang-Chi MCU","f":"img/simu-liu.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Simu_Liu_by_Gage_Skidmore_2.jpg","a":"Simu Liu"}],"kamala":[{"l":"Kamala Khan","q":"Kamala Khan Ms. Marvel","f":"img/iman-vellani.png","c":"VOA Urdu","li":"Public domain","u":"https://commons.wikimedia.org/wiki/File:Iman_Vellani_2022_(2).png","a":"Iman Vellani"},{"l":"Ms.-Marvel-Kostüm","q":"Ms. Marvel suit MCU","f":"img/x-ms-marvel-cosplay-kamala.jpg","c":"Richie S from Brooklyn, NY, United States","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Special_Edition_NYC_2015_-_Ms._Marvel_(18357883500),_cropped.jpg","k":"Cosplay"}],"walker":[{"l":"John Walker","q":"John Walker U.S. Agent","f":"img/wyatt-russell.jpg","c":"JaceMerlyn","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Wyatt_Russell_at_Comic_Con_Connections_26_19_(cropped).jpg","a":"Wyatt Russell"},{"l":"Als Captain America","q":"John Walker Captain America Falcon Winter Soldier"}],"gamneb":[{"l":"Gamora","q":"Gamora MCU","f":"img/zoe-saldana.jpg","c":"Kevin Payravi","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Zoe_Salda%C3%B1a_at_the_2024_Toronto_International_Film_Festival_(cropped).jpg","a":"Zoe Saldaña"},{"l":"Nebula","q":"Nebula MCU","f":"img/karen-gillan.jpg","c":"Super Festivals","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Karen_Gillan_Photo_Op_GalaxyCon_Des_Moines_2025_(cropped).jpg","a":"Karen Gillan"}],"quick":[{"l":"Pietro (MCU)","q":"Quicksilver Age of Ultron","f":"img/aaron-taylor-johnson.jpg","c":"LucaFazPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Aaron_Taylor-Johnson_at_82nd_Venice_International_Film_Festival-1_(cropped).jpg","a":"Aaron Taylor-Johnson"},{"l":"Peter (Fox) und „Ralph“","q":"Quicksilver Evan Peters X-Men WandaVision","f":"img/evan-peters.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Evan_Peters_by_Gage_Skidmore_4.jpg","a":"Evan Peters"}],"claire":[{"l":"Claire Temple","q":"Claire Temple Netflix","f":"img/rosario-dawson.jpg","c":"John Manard","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Rosario_Dawson_2025.jpg","a":"Rosario Dawson"}],"karen":[{"l":"Karen Page","q":"Karen Page Daredevil","f":"img/deborah-ann-woll.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Deborah_Ann_Woll_by_Gage_Skidmore_3.jpg","a":"Deborah Ann Woll"},{"l":"Foggy Nelson","q":"Foggy Nelson Daredevil","f":"img/elden-henson.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Elden_Henson_by_Gage_Skidmore_2.jpg","a":"Elden Henson"}],"duck":[{"l":"Howard the Duck","q":"Howard the Duck Guardians of the Galaxy"},{"l":"Film von 1986","q":"Howard the Duck 1986"}],"jimmy":[{"l":"Jimmy Woo","q":"Jimmy Woo MCU","f":"img/randall-park.jpg","c":"Sarran Hamilton","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Randall_Park_-_Girl_Group_-_TIFF_2026.jpg","a":"Randall Park"}],"everett":[{"l":"Everett Ross","q":"Everett Ross MCU","f":"img/martin-freeman.jpg","c":"Harald Krichel","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Martin_Freeman-5341.jpg","a":"Martin Freeman"}],"mystique":[{"l":"Mystique","q":"Mystique Rebecca Romijn","f":"img/rebecca-romijn.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Rebecca_Romijn_by_Gage_Skidmore_2.jpg","a":"Rebecca Romijn"},{"l":"Die junge Raven","q":"Mystique Jennifer Lawrence","f":"img/jennifer-lawrence.jpg","c":"Ciné Zooms 2","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Jennifer_Lawrence,_Cannes_Film_Festival_2025.jpg","a":"Jennifer Lawrence"},{"l":"Blaue Gestalt","q":"Mystique blue form X-Men","f":"img/x-mystique-cosplay.jpg","c":"https://www.flickr.com/photos/28277470@N05/","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:SDCC_2018_-_Mystique_cosplay_(42709558035).jpg","k":"Cosplay"}],"beast":[{"l":"Beast","q":"Beast Kelsey Grammer X-Men","f":"img/kelsey-grammer.jpg","c":"Exchanges Photos","li":"CC0","u":"https://commons.wikimedia.org/wiki/File:Kelsey_Grammer_Young_Washington_Film_Screening_2026_(cropped).jpg","a":"Kelsey Grammer"},{"l":"Der junge Hank","q":"Beast Nicholas Hoult","f":"img/nicholas-hoult.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Nicholas_Hoult-67849_(cropped).jpg","a":"Nicholas Hoult"}],"gambit":[{"l":"Gambit (2024)","q":"Gambit Channing Tatum Deadpool Wolverine","f":"img/channing-tatum.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Channing_Tatum_at_the_2026_Berlin_International_Film_Festival-69843.jpg","a":"Channing Tatum"},{"l":"Gambit (2009)","q":"Gambit Taylor Kitsch","f":"img/taylor-kitsch.jpg","c":"Moody College of Communication from Austin, USA","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Stephanie_Simon_%26_Taylor_Kitsch_-_Sept_23,_2019_(48788474567)_(cropped).jpg","a":"Taylor Kitsch"}],"jean":[{"l":"Jean Grey","q":"Jean Grey Famke Janssen","f":"img/famke-janssen.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Famke_Janssen_by_Gage_Skidmore_2.jpg","a":"Famke Janssen"},{"l":"Die junge Jean","q":"Jean Grey Sophie Turner Dark Phoenix","f":"img/sophie-turner.jpg","c":"Duk3L1xon","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Sophie_Turner_at_SXSW_London_June_2025_(cropped).jpg","a":"Sophie Turner"},{"l":"Dark Phoenix","q":"Dark Phoenix X-Men The Last Stand"}],"gwen":[{"l":"Gwen Stacy (Webb)","q":"Gwen Stacy Emma Stone","f":"img/emma-stone.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Emma_Stone_at_the_2025_Venice_Film_Festival-6313_(cropped).jpg","a":"Emma Stone"},{"l":"Gwen Stacy (Raimi)","q":"Gwen Stacy Spider-Man 3","f":"img/bryce-dallas-howard.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Bryce_Dallas_Howard_-_Los_Angeles_Comic_Con_2025.jpg","a":"Bryce Dallas Howard"},{"l":"Spider-Gwen","q":"Spider-Gwen Across the Spider-Verse","f":"img/hailee-steinfeld.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Hailee_Steinfeld_by_Gage_Skidmore.jpg","a":"Hailee Steinfeld","v":1},{"l":"Spider-Gwen im Anzug","q":"Spider-Gwen suit Spider-Verse","f":"img/x-spider-gwen-cosplay.jpg","c":"William Tung from USA","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:SDCC_2017_-_Spider-Gwen_Cosplay_(36015055641).jpg","k":"Cosplay"}],"jjj":[{"l":"J. Jonah Jameson","q":"J. Jonah Jameson J.K. Simmons","f":"img/j-k-simmons.jpg","c":"Jay Dixit","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:JK_Simmons_at_the_2024_Toronto_International_Film_Festival_(cropped).jpg","a":"J. K. Simmons"}],"prowler":[{"l":"Aaron Davis (MCU)","q":"Aaron Davis Donald Glover Homecoming","f":"img/donald-glover.jpg","c":"Bill Ingalls","li":"Public domain","u":"https://commons.wikimedia.org/wiki/File:Donald_Glover_TIFF_2015.jpg","a":"Donald Glover"},{"l":"Prowler (Spider-Verse)","q":"Prowler Into the Spider-Verse","f":"img/mahershala-ali.jpg","c":"Gabriel Hutchinson","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Mahershala_Ali_at_TIFF_2026_01.jpg","a":"Mahershala Ali","v":1}],"ghostr":[{"l":"Johnny Blaze","q":"Ghost Rider Nicolas Cage","f":"img/nicolas-cage.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Nicolas_Cage_at_Los_Angeles_Comic_Con_2026-2.jpg","a":"Nicolas Cage"},{"l":"Robbie Reyes","q":"Ghost Rider Robbie Reyes Agents of SHIELD","f":"img/gabriel-luna.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Gabriel_Luna_at_CCBP_2025.jpg","a":"Gabriel Luna"},{"l":"Flammenschädel","q":"Ghost Rider flaming skull","f":"img/x-ghost-rider-cosplay.jpg","c":"Miguel Discart","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Ghost_Rider_at_Comiccon_Brussels_2023.jpg","k":"Cosplay"}],"thanos":[{"l":"Thanos","q":"Thanos MCU","f":"img/josh-brolin.jpg","c":"Max Surprenant","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Josh_Brolin_TIFF_2025_(cropped).jpg","a":"Josh Brolin"},{"l":"In Rüstung","q":"Thanos armor Infinity War","f":"img/x-thanos-cosplay.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Thanos_at_GalaxyCon_Richmond_2020_(49666517961).jpg","k":"Cosplay"},{"l":"Thanos als Farmer","q":"Thanos farmer Endgame garden"}],"doom":[{"l":"Doom (MCU)","q":"Doctor Doom Robert Downey Jr Avengers Doomsday","f":"img/robert-downey-jr.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:RobertDowneyJr-byPhilipRomano7_(cropped).jpg","a":"Robert Downey Jr."},{"l":"Doom (2005)","q":"Doctor Doom 2005 Julian McMahon","f":"img/julian-mcmahon.jpg","c":"Danny Casillas","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Julian_McMahon_Dec_2011_(cropped).jpg","a":"Julian McMahon"},{"l":"Doom (2015)","q":"Doctor Doom 2015 Toby Kebbell","f":"img/toby-kebbell.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Toby_Kebbell_by_Gage_Skidmore.jpg","a":"Toby Kebbell"},{"l":"Maske und Umhang","q":"Doctor Doom mask MCU","f":"img/x-doctor-doom-cosplay.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Doctor_Doom_at_Florida_Supercon_2013_(9359724071).jpg","k":"Cosplay"}],"redskull":[{"l":"Johann Schmidt","q":"Red Skull Hugo Weaving","f":"img/hugo-weaving.jpg","c":"Siebbi","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Hugo_Weaving_2014.jpg","a":"Hugo Weaving"},{"l":"Red Skull","q":"Red Skull Captain America First Avenger","f":"img/x-red-skull-cosplay.jpg","c":"greyloch","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Red_Skull_Cosplay_at_Dragon_Con_2015.jpg","k":"Cosplay"},{"l":"Wächter auf Vormir","q":"Red Skull Vormir Stonekeeper"}],"zola":[{"l":"Arnim Zola","q":"Arnim Zola","f":"img/toby-jones.jpg","c":"Ralph_PH","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Toby_Jones_-_EmpireOfLightBFI121022_(30_of_33)_(52448062684).jpg","a":"Toby Jones"},{"l":"Als Computer","q":"Arnim Zola computer Winter Soldier"}],"zemo":[{"l":"Helmut Zemo","q":"Baron Zemo MCU","f":"img/daniel-bruhl.jpg","c":"Martin Kraft","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:MJK_68238_Daniel_Br%C3%BChl_(Berlinale_2020).jpg","a":"Daniel Brühl"},{"l":"Mit violetter Maske","q":"Baron Zemo mask Falcon Winter Soldier"}],"ultron":[{"l":"Ultron","q":"Ultron Age of Ultron","f":"img/james-spader.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:James_Spader_by_Gage_Skidmore.jpg","a":"James Spader","v":1},{"l":"Ultrons Körper","q":"Ultron Prime body","f":"img/x-ultron-cosplay.jpg","c":"Pat Loika","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_Ultron_Dragon_Con_2013.jpg","k":"Cosplay"},{"l":"Infinity Ultron","q":"Infinity Ultron What If"}],"kangv":[{"l":"Kang der Eroberer","q":"Kang the Conqueror Quantumania","f":"img/jonathan-majors.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:JonathanMajors-byPhilipRomano.jpg","a":"Jonathan Majors"},{"l":"Jener der bleibt","q":"He Who Remains Loki"},{"l":"Victor Timely","q":"Victor Timely Loki season 2"},{"l":"Rat der Kangs","q":"Council of Kangs Immortus Rama-Tut"}],"kingpin":[{"l":"Wilson Fisk","q":"Kingpin Vincent D'Onofrio","f":"img/vincent-d-onofrio.jpg","c":"John Manard","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Vincent_D%27Onofrio_GalaxyCon_Nashville_052026-4.jpg","a":"Vincent D'Onofrio"},{"l":"Kingpin (2003)","q":"Kingpin Michael Clarke Duncan Daredevil","f":"img/michael-clarke-duncan.jpg","c":"Movieguide®","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:MClarkeDuncan021109-R106_(50094589037).jpg","a":"Michael Clarke Duncan"},{"l":"Kingpin im Spider-Verse","q":"Kingpin Into the Spider-Verse"}],"bullseye":[{"l":"Dex Poindexter","q":"Bullseye Wilson Bethel Daredevil","f":"img/wilson-bethel.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Wilson_Bethel_-_Los_Angeles_Comic_Con_2025.jpg","a":"Wilson Bethel"},{"l":"Bullseye (2003)","q":"Bullseye Colin Farrell","f":"img/colin-farrell.jpg","c":"Quejaytee","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:2025_Colin_Farrell_-_2_(cropped).jpg","a":"Colin Farrell"}],"hand":[{"l":"Elektra (Netflix)","q":"Elektra Elodie Yung Daredevil","f":"img/elodie-yung.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Elodie_Yung_by_Gage_Skidmore.jpg","a":"Élodie Yung"},{"l":"Elektra (2003)","q":"Elektra Jennifer Garner","f":"img/jennifer-garner.jpg","c":"Gage Skidmore from Surprise, AZ, United States of America","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Jennifer_Garner_-_2024_(54106107278)_(cropped).jpg","a":"Jennifer Garner"},{"l":"Madame Gao","q":"Madame Gao","f":"img/wai-ching-ho.jpg","c":"German Comic Con","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Wai_Ching_Ho,_German_Comic_Con_2017_(cropped).jpg","a":"Wai Ching Ho"}],"goblin":[{"l":"Norman Osborn","q":"Norman Osborn Willem Dafoe","f":"img/willem-dafoe.jpg","c":"Kalai Ramu","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Willem_Dafoe_at_78th_Locarno_Film_Festival_(cropped).jpg","a":"Willem Dafoe"},{"l":"Green Goblin mit Maske","q":"Green Goblin 2002 mask glider","f":"img/x-green-goblin-cosplay.jpg","c":"- EMR -","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_the_Green_Goblin_(52224516040).jpg","k":"Cosplay"},{"l":"Harry Osborn (Raimi)","q":"New Goblin Harry Osborn Spider-Man 3","f":"img/james-franco.jpg","c":"Angela George","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:James_Franco_4,_2013.jpg","a":"James Franco"},{"l":"Harry Osborn (Webb)","q":"Green Goblin Amazing Spider-Man 2","f":"img/dane-dehaan.png","c":"Hugo Coucke","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Dane_DeHaan_2018.png","a":"Dane DeHaan"}],"ock":[{"l":"Otto Octavius","q":"Doctor Octopus Alfred Molina","f":"img/alfred-molina.jpg","c":"Jakesprake89","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Alfred_Molina_2021.jpg","a":"Alfred Molina"},{"l":"Olivia Octavius","q":"Olivia Octavius Into the Spider-Verse","f":"img/kathryn-hahn.png","c":"Our Movie Guide","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Kathryn_Hahn_Agatha_All_Along_Premiere_01.png","a":"Kathryn Hahn","v":1},{"l":"Mit den Metallarmen","q":"Doctor Octopus arms Spider-Man 2","f":"img/x-doctor-octopus-cosplay.jpg","c":"Bob B. Brown","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:NYCC_2019_Cosplay_of_Doctor_Octopus_-_02.jpg","k":"Cosplay im Comic-Kostüm"}],"trio":[{"l":"Sandman","q":"Sandman Spider-Man 3","f":"img/thomas-haden-church.jpg","c":"David Shankbone","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Thomas_Haden_Church_at_the_2009_Tribeca_Film_Festival.jpg","a":"Thomas Haden Church"},{"l":"Curt Connors","q":"Lizard Amazing Spider-Man","f":"img/rhys-ifans.jpg","c":"Senedd Cymru / Welsh Parliament from Wales","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Rhys_Ifans_(53290048890)_(cropped).jpg","a":"Rhys Ifans"},{"l":"Electro","q":"Electro Jamie Foxx No Way Home","f":"img/jamie-foxx.jpg","c":"John Bauld from Toronto, Canada","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:TIFF_2019_jamie_foxx_(cropped).jpg","a":"Jamie Foxx"}],"spvill":[{"l":"Adrian Toomes","q":"Vulture Michael Keaton Homecoming","f":"img/michael-keaton.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Michael_Keaton-63916_(cropped).jpg","a":"Michael Keaton"},{"l":"Quentin Beck","q":"Mysterio Jake Gyllenhaal","f":"img/jake-gyllenhaal.jpg","c":"Toglenn","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Jake_Gyllenhaal_2019_by_Glenn_Francis.jpg","a":"Jake Gyllenhaal"},{"l":"Mac Gargan","q":"Scorpion Mac Gargan Michael Mando","f":"img/michael-mando.jpg","c":"Gage Skidmore from Peoria, AZ, United States of America","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Michael_Mando_at_the_2018_San_Diego_Comic-Con.jpg","a":"Michael Mando"},{"l":"Mysterio mit Kuppel","q":"Mysterio suit Far From Home","f":"img/x-mysterio-cosplay.jpg","c":"William Tung","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Mysterio_Cosplay_at_San_Diego_Comic_Con_2019.jpg","k":"Cosplay"},{"l":"Vulture-Anzug","q":"Vulture suit Homecoming wings"}],"sinister":[{"l":"Rhino (2014)","q":"Rhino Amazing Spider-Man 2","f":"img/paul-giamatti.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Paul_Giamatti_at_the_2026_New_York_Film_Festival-032.jpg","a":"Paul Giamatti"},{"l":"Rhino (2024)","q":"Rhino Kraven the Hunter","f":"img/alessandro-nivola.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Alessandro_Nivola_Jay_Kelly-03.jpg","a":"Alessandro Nivola"},{"l":"Kraven","q":"Kraven the Hunter 2024","f":"img/aaron-taylor-johnson.jpg","c":"LucaFazPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Aaron_Taylor-Johnson_at_82nd_Venice_International_Film_Festival-1_(cropped).jpg","a":"Aaron Taylor-Johnson"}],"killmonger":[{"l":"Erik Killmonger","q":"Killmonger Black Panther","f":"img/michael-b-jordan.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Michael_B_Jordan_-_Sinners_(cropped).jpg","a":"Michael B. Jordan"},{"l":"Ulysses Klaue","q":"Ulysses Klaue MCU","f":"img/andy-serkis.png","c":"Fandomuniverse","li":"CC0","u":"https://commons.wikimedia.org/wiki/File:Andy_Serkis_at_MEGACON_Orlando_2025.png","a":"Andy Serkis"},{"l":"Goldener Jaguar","q":"Killmonger golden jaguar suit","f":"img/x-killmonger-cosplay.jpg","c":"istolethetv","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:New_York_Comic_Con_2019_-_Erik_Killmonger_cosplay_(48853036036).jpg","k":"Cosplay, in Zivil"}],"collector":[{"l":"Collector","q":"The Collector MCU","f":"img/benicio-del-toro.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Benicio_del_Toro-7624.jpg","a":"Benicio del Toro"},{"l":"Grandmaster","q":"Grandmaster Thor Ragnarok","f":"img/jeff-goldblum.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Jeff_Goldblum_by_Gage_Skidmore_3.jpg","a":"Jeff Goldblum"}],"adam":[{"l":"Adam Warlock","q":"Adam Warlock Guardians Vol 3","f":"img/will-poulter.jpg","c":"Janeirohy","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Will_Poulter_Sundance_2026_(cropped2).jpg","a":"Will Poulter"},{"l":"Ayesha","q":"Ayesha Sovereign Guardians","f":"img/elizabeth-debicki.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Elizabeth_Debicki_by_Gage_Skidmore.jpg","a":"Elizabeth Debicki"}],"cross":[{"l":"Darren Cross","q":"Darren Cross Yellowjacket","f":"img/corey-stoll.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Corey_Stoll_by_Gage_Skidmore.jpg","a":"Corey Stoll"},{"l":"Yellowjacket","q":"Yellowjacket suit Ant-Man"},{"l":"M.O.D.O.K.","q":"MODOK Quantumania"}],"agathav":[{"l":"Agatha Harkness","q":"Agatha Harkness","f":"img/kathryn-hahn.png","c":"Our Movie Guide","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Kathryn_Hahn_Agatha_All_Along_Premiere_01.png","a":"Kathryn Hahn"},{"l":"Als Hexe","q":"Agatha Harkness witch form WandaVision purple","f":"img/x-agatha-harkness-cosplay.jpg","c":"John Manard","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Agatha_Harkness_Cosplay_01.jpg","k":"Cosplay"},{"l":"Agnes","q":"Agnes WandaVision sitcom"}],"sharon":[{"l":"Sharon Carter","q":"Sharon Carter MCU","f":"img/emily-vancamp.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Emily_VanCamp_at_Televerse_2026.jpg","a":"Emily VanCamp"}],"rumlow":[{"l":"Brock Rumlow","q":"Brock Rumlow Winter Soldier","f":"img/frank-grillo.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Frank_Grillo_by_Gage_Skidmore_2.jpg","a":"Frank Grillo"},{"l":"Crossbones","q":"Crossbones Civil War mask","f":"img/x-crossbones-cosplay-marvel.jpg","c":"Mooshuu from San Diego","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:San_Diego_Comic_Con_2014-1356_(14751022066).jpg","k":"Cosplay"}],"batroc":[{"l":"Georges Batroc","q":"Batroc MCU","f":"img/georges-st-pierre.jpg","c":"Web Summit","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:2021_-_Centre_Stage_DG4_5765_(51654942080)_(cropped).jpg","a":"Georges St-Pierre"}],"hammer":[{"l":"Justin Hammer","q":"Justin Hammer Iron Man 2","f":"img/sam-rockwell.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Sam_Rockwell-3953.jpg","a":"Sam Rockwell"}],"creel":[{"l":"Carl Creel","q":"Absorbing Man Agents of SHIELD"}],"magneto":[{"l":"Magneto","q":"Magneto Ian McKellen","f":"img/ian-mckellen.jpg","c":"Gage Skidmore","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:SDCC13_-_Ian_McKellen.jpg","a":"Ian McKellen"},{"l":"Der junge Erik","q":"Magneto Michael Fassbender","f":"img/michael-fassbender.jpg","c":"Gabriel Hutchinson","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Michael_Fassbender_at_the_2026_Cannes_Film_Festival_02_(cropped).jpg","a":"Michael Fassbender"},{"l":"Mit Helm","q":"Magneto helmet X-Men","f":"img/x-magneto-cosplay.jpg","c":"Pat Loika","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Cosplay_of_Magneto_at_WonderCon_2012.jpg","k":"Cosplay im Comic-Kostüm"}],"stryker":[{"l":"Stryker (X2)","q":"William Stryker X2","f":"img/brian-cox-actor.jpg","c":"Amy Martin Photography","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Brian_Cox_Edinburgh_2025.jpg","a":"Brian Cox"},{"l":"Stryker (2009)","q":"William Stryker X-Men Origins","f":"img/danny-huston.jpg","c":"Andrew Walker","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Danny_Huston_(29620934491).jpg","a":"Danny Huston"},{"l":"Der junge Stryker","q":"William Stryker Days of Future Past"}],"sentinels":[{"l":"Sentinels von 1973","q":"Sentinels Days of Future Past 1973"},{"l":"Sentinels der Zukunft","q":"future Sentinels Days of Future Past"},{"l":"Sentinels in X-Men '97","q":"Sentinels X-Men 97"}],"voidx":[{"l":"Cassandra Nova","q":"Cassandra Nova Deadpool Wolverine","f":"img/emma-corrin.jpg","c":"LucaFazPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Emma_Corrin_at_the_83rd_Venice_International_Film_Festival.jpg","a":"Emma Corrin"},{"l":"Sabretooth","q":"Sabretooth Tyler Mane","f":"img/tyler-mane.jpg","c":"Sam Howzit","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Tyler_Mane_2014_(cropped).jpg","a":"Tyler Mane"},{"l":"Pyro","q":"Pyro Aaron Stanford","f":"img/aaron-stanford.jpg","c":"Thibault","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Aaron_Stanford_-_Nikita_(cropped).jpg","a":"Aaron Stanford"},{"l":"Juggernaut (2006)","q":"Juggernaut X-Men Last Stand","f":"img/vinnie-jones.jpg","c":"5 CREATIVE","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Vinnie_Jones_circa_2013.jpg","a":"Vinnie Jones"}],"galactus":[{"l":"Galactus","q":"Galactus First Steps","f":"img/ralph-ineson.jpg","c":"Edinburgh International Film Festival","li":"Public domain","u":"https://commons.wikimedia.org/wiki/File:EIFF_2025_Two_Neighbours_August_16,_2025_Photo_credit_Cameron_Allan-29_(Ralph).jpg","a":"Ralph Ineson"},{"l":"Silver Surfer (Shalla-Bal)","q":"Silver Surfer Shalla-Bal First Steps","f":"img/julia-garner.jpg","c":"Harald Krichel","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Julia_Garner_Berlinale_2020_(cropped)_2.jpg","a":"Julia Garner"},{"l":"Silver Surfer (2007)","q":"Silver Surfer 2007","f":"img/doug-jones-actor.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Doug_Jones_at_San_Diego_Comic_Con_2026-1.jpg","a":"Doug Jones"},{"l":"Der Surfer auf dem Brett","q":"Silver Surfer board","f":"img/x-silver-surfer-cosplay.jpg","c":"tr.robinson","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Silver_Surfer_Cosplay_at_Dragon_Con_2014.jpg","k":"Cosplay"}],"space":[{"l":"Tesserakt","q":"Tesseract MCU cube"},{"l":"Raumstein","q":"Space Stone Infinity War"}],"mind":[{"l":"Lokis Zepter","q":"Loki scepter Avengers"},{"l":"Gedankenstein in Visions Stirn","q":"Mind Stone Vision forehead"}],"reality":[{"l":"Äther","q":"Aether Thor Dark World"},{"l":"Realitätsstein","q":"Reality Stone Infinity War"}],"power":[{"l":"Orb","q":"Orb Guardians of the Galaxy Power Stone"},{"l":"Machtstein","q":"Power Stone Guardians of the Galaxy"}],"time":[{"l":"Auge von Agamotto","q":"Eye of Agamotto Doctor Strange","f":"img/x-eye-of-agamotto.jpg","c":"KtMystic","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Eye_of_Agamotto_prop.jpg","k":"Ausstellungsstück"},{"l":"Zeitstein","q":"Time Stone MCU"}],"soul":[{"l":"Seelenstein","q":"Soul Stone Vormir"}],"mjolnir":[{"l":"Mjölnir","q":"Mjolnir MCU","f":"img/x-mjolnir-thor-hammer.jpg","c":"Hey Fritters","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Mjolnir_(48728944052).jpg","k":"Nachbau"},{"l":"Stormbreaker","q":"Stormbreaker Infinity War"},{"l":"Zerbrochener Mjölnir","q":"Mjolnir broken reforged Love and Thunder"}],"shield":[{"l":"Der runde Schild","q":"Captain America shield MCU","f":"img/x-captain-america-s-shield.jpg","c":"ze_bear","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Cap%27s_Shield.jpg","k":"Nachbau"},{"l":"Zerbrochen in Endgame","q":"Captain America broken shield Endgame"},{"l":"Schild von 1943","q":"Captain America heater shield First Avenger"}],"serum":[{"l":"Serum","q":"super soldier serum vial Falcon Winter Soldier"}],"vibranium":[{"l":"Vibranium","q":"vibranium Wakanda raw"}],"adamantium":[{"l":"Wolverines Krallen","q":"Wolverine adamantium claws","f":"img/x-wolverine-claws.jpg","c":"istolethetv from Hong Kong, China","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Claws_vs_bullets_(4054273885).jpg","k":"Cosplay"},{"l":"Celestial-Insel","q":"Celestial Island Brave New World Tiamut"}],"darkhold":[{"l":"Darkhold","q":"Darkhold WandaVision book"}],"tenrings":[{"l":"Die Zehn Ringe","q":"Ten Rings Shang-Chi rings"},{"l":"Zeichen der Organisation","q":"Ten Rings logo Iron Man"}],"bangles":[{"l":"Armreif","q":"Ms. Marvel bangle Quantum Band"}],"pym":[{"l":"Pym-Partikel","q":"Pym Particles vial"},{"l":"Quantenreich","q":"Quantum Realm MCU"}],"stark":[{"l":"Arc-Reaktor","q":"arc reactor Iron Man"},{"l":"Rüstungshalle","q":"Iron Man Hall of Armor","f":"img/x-iron-man-armor-exhibition.jpg","c":"Higher Further Faster","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Iron_Man%27s_Armor_(2024_Exhibition).jpg","k":"Ausstellungsstück"},{"l":"E.D.I.T.H.","q":"EDITH glasses Far From Home"}],"symbiote":[{"l":"Eddie Brock","q":"Eddie Brock Tom Hardy Venom","f":"img/tom-hardy.jpg","c":"Tim Cornbill","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Tom_Hardy_Locke_Premiere.jpg","a":"Tom Hardy"},{"l":"Venom","q":"Venom 2018 movie","f":"img/x-venom-cosplay.jpg","c":"https://www.flickr.com/photos/145739041@N05/","li":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Venom_Cosplay_2.jpg","k":"Cosplay"},{"l":"Eddie Brock (2007)","q":"Venom Spider-Man 3 Topher Grace","f":"img/topher-grace.jpg","c":"Marlene Landu","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Topher_Grace_01_(cropped).jpg","a":"Topher Grace"},{"l":"Cletus Kasady / Carnage","q":"Carnage Let There Be Carnage","f":"img/woody-harrelson.jpg","c":"Mass Communication Specialist 2nd Class Justin R. Pacheco","li":"Public domain","u":"https://commons.wikimedia.org/wiki/File:Woody_Harrelson_191020-N-NU281-1028_(cropped).jpg","a":"Woody Harrelson"}],"gauntlet":[{"l":"Thanos' Handschuh","q":"Infinity Gauntlet Thanos","f":"img/x-infinity-gauntlet.jpg","c":"Thomson200","li":"CC0","u":"https://commons.wikimedia.org/wiki/File:Infinity_Gauntlet_-_2018_Atlanta_Comic_Con.jpg","k":"Nachbau"},{"l":"Tonys Nano-Handschuh","q":"Iron Man nano gauntlet Endgame"}],"vault":[{"l":"Schatzkammer","q":"Odin's vault Thor"},{"l":"Urne der Eisriesen","q":"Casket of Ancient Winters"}],"extremis":[{"l":"Extremis","q":"Extremis Iron Man 3 glowing"}],"herb":[{"l":"Herzförmiges Kraut","q":"heart-shaped herb Black Panther"}],"mix":[{"l":"Walkman","q":"Star-Lord Walkman Awesome Mix","f":"img/x-sony-walkman-tps-l2.jpg","c":"Binarysequence","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Original_Sony_Walkman_TPS-L2.JPG","k":"Originalgerät"},{"l":"Zune","q":"Star-Lord Zune","f":"img/x-microsoft-zune-30.jpg","c":"Travis Hornung","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Zune-brown.jpg","k":"Originalgerät"}],"cerebro":[{"l":"Cerebro","q":"Cerebro X-Men"}],"nyc":[{"l":"Schlacht von New York","q":"Battle of New York Avengers 2012 Chitauri"}],"hydra":[{"l":"Hydra","q":"Hydra logo Winter Soldier MCU"},{"l":"Alexander Pierce","q":"Alexander Pierce Winter Soldier","f":"img/robert-redford.jpg","c":"NBC Television","li":"Public domain","u":"https://commons.wikimedia.org/wiki/File:Tell_Them_Willie_Boy_Is_Here_%E2%80%93_Robert_Redford_photo.jpg","a":"Robert Redford"}],"sokovia":[{"l":"Sokovia-Abkommen","q":"Sokovia Accords Civil War"}],"blip":[{"l":"Der Blip","q":"Thanos snap dust Infinity War"}],"tva":[{"l":"Mobius","q":"Mobius Loki TVA","f":"img/owen-wilson.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:OwenWilson-byPhilipRomano.jpg","a":"Owen Wilson"},{"l":"Ravonna Renslayer","q":"Ravonna Renslayer Loki","f":"img/gugu-mbatha-raw.jpg","c":"Foreign, Commonwealth & Development Office","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:2026_Gugu_Mbatha-Raw_-_(cropped).jpg","a":"Gugu Mbatha-Raw"},{"l":"Die TVA","q":"TVA Time Variance Authority Loki"},{"l":"Miss Minutes","q":"Miss Minutes Loki"}],"multi":[{"l":"America Chavez","q":"America Chavez Multiverse of Madness","f":"img/xochitl-gomez.jpg","c":"4DX","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Xochitl_Gomez_(2022).jpg","a":"Xochitl Gomez"},{"l":"Inkursion","q":"incursion Multiverse of Madness"},{"l":"Baum der Zeitlinien","q":"Loki Yggdrasil timelines tree"}],"bridge":[{"l":"Drei Spider-Men","q":"No Way Home three Spider-Men"}],"ssu":[{"l":"Morbius","q":"Morbius 2022","f":"img/jared-leto.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Jared_Leto_by_Gage_Skidmore_2.jpg","a":"Jared Leto"},{"l":"Madame Web","q":"Madame Web 2024","f":"img/dakota-johnson.jpg","c":"Gabriel Hutchinson","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Dakota_Johnson_at_the_2025_Cannes_Film_Festival_(cropped).jpg","a":"Dakota Johnson"},{"l":"Kraven","q":"Kraven the Hunter 2024","f":"img/aaron-taylor-johnson.jpg","c":"LucaFazPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Aaron_Taylor-Johnson_at_82nd_Venice_International_Film_Festival-1_(cropped).jpg","a":"Aaron Taylor-Johnson"}],"streets":[{"l":"Maya Lopez / Echo","q":"Echo Maya Lopez MCU"},{"l":"Bürgermeister Fisk","q":"Mayor Fisk Daredevil Born Again"}],"tbolts":[{"l":"Valentina de Fontaine","q":"Valentina Allegra de Fontaine MCU","f":"img/julia-louis-dreyfus.jpg","c":"PhilipRomano","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:JuliaLouisDreyfus-byPhilipRomano.jpg","a":"Julia Louis-Dreyfus"},{"l":"Red Guardian","q":"Red Guardian MCU","f":"img/david-harbour.jpg","c":"PelucheEn ElEstuche","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:David_Harbour_2025.jpg","a":"David Harbour"},{"l":"Ghost","q":"Ghost Ant-Man Wasp Thunderbolts","f":"img/hannah-john-kamen.jpg","c":"joyparris","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Hannah_John-Kamen_Ant-Man_%26_The_Wasp_premiere.jpg","a":"Hannah John-Kamen"},{"l":"Bob / Sentry","q":"Sentry Bob Thunderbolts","f":"img/lewis-pullman.jpg","c":"Kevin Paul","li":"CC BY 4.0","u":"https://commons.wikimedia.org/wiki/File:Lewis_Pullman_at_San_Diego_Comic_Con_2026-2.jpg","a":"Lewis Pullman"},{"l":"Taskmaster","q":"Taskmaster MCU","f":"img/olga-kurylenko.jpg","c":"Gilzetbase","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Olga-Kurylenko.jpg","a":"Olga Kurylenko"}],"young":[{"l":"Kate Bishop","q":"Kate Bishop Hawkeye","f":"img/hailee-steinfeld.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Hailee_Steinfeld_by_Gage_Skidmore.jpg","a":"Hailee Steinfeld"},{"l":"Riri Williams","q":"Ironheart Riri Williams","f":"img/dominique-thorne.jpg","c":"PhilipRomanoPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:DominiqueThorn-byPhilipRomano.jpg","a":"Dominique Thorne"},{"l":"Billy Maximoff","q":"Billy Maximoff Wiccan Agatha All Along","f":"img/joe-locke.jpg","c":"Our Movie Guide","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Joe_Locke_Agatha_All_Along_UK_Special_Screening_2024_01.jpg","a":"Joe Locke"},{"l":"America Chavez","q":"America Chavez MCU","f":"img/xochitl-gomez.jpg","c":"4DX","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Xochitl_Gomez_(2022).jpg","a":"Xochitl Gomez"}],"mutants":[{"l":"Mutanten im MCU","q":"MCU mutants X-Men Marvels Beast"}],"celest":[{"l":"Ego","q":"Ego Guardians of the Galaxy Vol 2","f":"img/kurt-russell.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Kurt_Russell_by_Gage_Skidmore_2.jpg","a":"Kurt Russell"},{"l":"Arishem","q":"Arishem Eternals Celestial"},{"l":"Tiamut","q":"Tiamut Celestial Island"}],"hulk08":[{"l":"Emil Blonsky","q":"Emil Blonsky Tim Roth","f":"img/tim-roth.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Tim_Roth_by_Gage_Skidmore_2.jpg","a":"Tim Roth"},{"l":"Samuel Sterns","q":"Samuel Sterns Leader Brave New World","f":"img/tim-blake-nelson.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Tim_Blake_Nelson_at_the_2026_Tribeca_Festival_-056.jpg","a":"Tim Blake Nelson"},{"l":"Betty Ross","q":"Betty Ross Liv Tyler","f":"img/liv-tyler.jpg","c":"Walterlan Papetti","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Liv_Tyler_(2016).jpg","a":"Liv Tyler"},{"l":"Abomination","q":"Abomination Shang-Chi She-Hulk"}],"skrulls":[{"l":"Talos","q":"Talos Skrull MCU","f":"img/ben-mendelsohn.jpg","c":"Gage Skidmore","li":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Ben_Mendelsohn_by_Gage_Skidmore.jpg","a":"Ben Mendelsohn"},{"l":"Ronan","q":"Ronan the Accuser MCU","f":"img/lee-pace.jpg","c":"Amy Martin Photography","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Lee_Pace_at_Foundations_Season_3_press_day.jpg","a":"Lee Pace"},{"l":"Skrulls","q":"Skrulls Captain Marvel"}],"inhumans":[{"l":"Black Bolt","q":"Black Bolt Inhumans Multiverse of Madness","f":"img/anson-mount.jpg","c":"Joe Peacock","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Anson_Mount_at_Rose_City_Comic_Con_2026_02_(cropped).jpg","a":"Anson Mount"}],"roxxon":[{"l":"Roxxon","q":"Roxxon logo MCU"}],"asgard":[{"l":"Odin","q":"Odin MCU","f":"img/anthony-hopkins.jpg","c":"Omar David Sandoval Sida","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Anthony_Hopkins_Red_Sea_Festival_2025_Portrait_(cropped).jpg","a":"Anthony Hopkins"},{"l":"Hela","q":"Hela Thor Ragnarok","f":"img/cate-blanchett.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Cate_Blanchett-63298_(cropped_2).jpg","a":"Cate Blanchett"},{"l":"Heimdall","q":"Heimdall MCU","f":"img/idris-elba.jpg","c":"Bryan Berlin","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Idris_Elba_A_House_of_Dynamite-21_(cropped).jpg","a":"Idris Elba"},{"l":"Valkyrie","q":"Valkyrie MCU","f":"img/tessa-thompson.jpg","c":"PhilipRomanoPhoto","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:TessaThompson-byPhilipRomano.jpg","a":"Tessa Thompson"},{"l":"Lady Sif","q":"Lady Sif MCU","f":"img/jaimie-alexander.jpg","c":"Richard Goldschmidt, www.piqtured.com Derivative by Keraunoscopia","li":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Jaimie_Alexander,_London,_2013_(tone).jpg","a":"Jaimie Alexander"},{"l":"Asgard","q":"Asgard MCU city"}],"redroom":[{"l":"Melina Vostokoff","q":"Melina Vostokoff Black Widow","f":"img/rachel-weisz.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Rachel_Weisz-62940_(cropped).jpg","a":"Rachel Weisz"},{"l":"Dreykov","q":"Dreykov Black Widow","f":"img/ray-winstone.jpg","c":"Ibsan73","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Ray_Winstone_2014.jpg","a":"Ray Winstone"},{"l":"Der Rote Raum","q":"Red Room Black Widow"}],"damage":[{"l":"Damage Control","q":"Department of Damage Control MCU"}],"tower":[{"l":"Avengers Tower","q":"Avengers Tower MCU"},{"l":"Hauptquartier","q":"Avengers Compound"}],"raft":[{"l":"Das Raft","q":"The Raft prison Civil War"}],"darkforce":[{"l":"Dormammu","q":"Dormammu Doctor Strange"},{"l":"Dunkle Dimension","q":"Dark Dimension Doctor Strange"}],"gods":[{"l":"Zeus","q":"Zeus Thor Love and Thunder","f":"img/russell-crowe.jpg","c":"Colleen Sturtevant","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Russell_Crowe_Venice_2026.jpg","a":"Russell Crowe"},{"l":"Khonshu","q":"Khonshu Moon Knight"},{"l":"Omnipotence City","q":"Omnipotence City Thor"}],"ben":[{"l":"Onkel Ben (2002)","q":"Uncle Ben Cliff Robertson Spider-Man","f":"img/cliff-robertson.png","c":"Unknown author Unknown author","li":"Public domain","u":"https://commons.wikimedia.org/wiki/File:Cliff_Robertson_Picnic_Cropped.png","a":"Cliff Robertson"},{"l":"Onkel Ben (2012)","q":"Uncle Ben Martin Sheen Amazing Spider-Man","f":"img/martin-sheen.jpg","c":"Super Festivals","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Martin_Sheen_(54429290460).jpg","a":"Martin Sheen"},{"l":"Tante May (MCU)","q":"Aunt May Marisa Tomei","f":"img/marisa-tomei.jpg","c":"Super Festivals from Ft. Lauderdale, USA","li":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Marisa_Tomei_Photo_Op_GalaxyCon_Raleigh_2024_(cropped).jpg","a":"Marisa Tomei"}],"howling":[{"l":"Howling Commandos","q":"Howling Commandos First Avenger"}],"watchers":[{"l":"Uatu","q":"Uatu the Watcher What If","f":"img/jeffrey-wright.jpg","c":"Harald Krichel","li":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Jeffrey_Wright-7706_(cropped).jpg","a":"Jeffrey Wright","v":1}]}/*END*/;
+
+/* ---------- Aufbereitung ---------- */
+const eraOf=d=>d<2008?0:d<2013?1:d<2016?2:d<2021?3:d<2023?4:d<2025.065?5:6;
+const TITLES=TT.map(([id,lane,d,name,tag,plot,o={}])=>({id,lane,d,name,tag,plot,era:eraOf(d),yl:o.yl||String(Math.floor(d)),sn:o.sn||name,de:o.de,soon:!!o.soon}));
+const T={}; TITLES.forEach(t=>T[t.id]=t);
+const THREADS=HH.map(([id,type,name,desc,st,k])=>{
+  const stops=Object.keys(st).filter(x=>{if(!T[x]){console.warn("Unbekannter Titel",id,x);return false}return true}).map(x=>({id:x,note:st[x]})).sort((a,b)=>T[a.id].d-T[b.id].d);
+  return {id,type,name,desc,stops,k:k||type};
+});
+const TH={}; THREADS.forEach(h=>TH[h.id]=h);
+const byTitle={};
+THREADS.forEach(h=>h.stops.forEach((s,i)=>{(byTitle[s.id]=byTitle[s.id]||[]).push({h,note:s.note,i})}));
+const TYPES={c:["Figuren","Figur"],v:["Gegenspieler","Gegenspieler"],a:["Artefakte & Technik","Artefakt"],p:["Handlung & Orte","Strang"]};
+
+/* ---------- Elemente ---------- */
+const $=s=>document.querySelector(s);
+const app=$("#app"),map=$("#map"),svg=$("#wires"),insp=$("#insp"),inspHead=$("#inspHead"),inspBody=$("#inspBody"),tabsEl=$("#tabs"),tlist=$("#tlist"),q=$("#q");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const wide=window.matchMedia("(min-width:1580px)");
+const calm=window.matchMedia("(prefers-reduced-motion:reduce)");
+let state={mode:"thread",id:"space"}, tab="a";
+
+/* ---------- Karte ---------- */
+function chipHTML(t){
+  const meta=[t.yl,t.tag,t.soon?"bald":""].filter(Boolean).join(" · ");
+  return `<button type="button" class="chip${t.soon?" soon":""}" data-title="${t.id}">${esc(t.sn)} <small>${esc(meta)}</small></button>`;
+}
+function buildMap(){
+  let h=`<div></div><div class="saga none" style="grid-column:2"></div><div class="saga" style="grid-column:3/6">Infinity-Saga</div><div class="saga" style="grid-column:6/9">Multiversums-Saga</div><div></div>`;
+  h+=ERAS.map(e=>`<div class="era"><b>${e.k}</b><span>${e.y}</span></div>`).join("");
+  for(const L of LANES){
+    h+=`<div class="lane"><b>${esc(L.n)}</b><span>${esc(L.s)}</span></div>`;
+    for(let e=0;e<7;e++){
+      const sp=(SPANS[L.id]||{})[e];
+      if(sp){h+=`<div class="cell note" style="grid-column:span ${sp[0]}">${esc(sp[1])}</div>`;e+=sp[0]-1;continue}
+      h+=`<div class="cell">${TITLES.filter(t=>t.lane===L.id&&t.era===e).sort((a,b)=>a.d-b.d).map(chipHTML).join("")}</div>`;
+    }
+  }
+  svg.insertAdjacentHTML("beforebegin",h);
+}
+buildMap();
+const chipEl={}; map.querySelectorAll(".chip").forEach(c=>chipEl[c.dataset.title]=c);
+
+function neighbours(id){
+  const prev={},next={};
+  (byTitle[id]||[]).forEach(({h,i,note})=>{
+    const p=h.stops[i-1],n=h.stops[i+1];
+    if(p)(prev[p.id]=prev[p.id]||[]).push({h,here:note,there:p.note});
+    if(n)(next[n.id]=next[n.id]||[]).push({h,here:note,there:n.note});
+  });
+  return {prev,next};
+}
+function seg(a,b){
+  const dx=b[0]-a[0],dy=b[1]-a[1];
+  if(Math.abs(dx)<Math.abs(dy)*.6){const m=dy/2;return `M${a[0]},${a[1]}C${a[0]},${a[1]+m} ${b[0]},${b[1]-m} ${b[0]},${b[1]}`}
+  const s=dx<0?-1:1,m=Math.max(26,Math.abs(dx)/2)*s;
+  return `M${a[0]},${a[1]}C${a[0]+m},${a[1]} ${b[0]-m},${b[1]} ${b[0]},${b[1]}`;
+}
+function draw(anim){
+  const W=map.offsetWidth,H=map.offsetHeight,mr=map.getBoundingClientRect();
+  svg.setAttribute("width",W);svg.setAttribute("height",H);svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const c=id=>{const r=chipEl[id].getBoundingClientRect();return [Math.round(r.left-mr.left+r.width/2),Math.round(r.top-mr.top+r.height/2)]};
+  let h="";
+  if(state.mode==="thread"){
+    const s=TH[state.id].stops;let d="";
+    for(let i=1;i<s.length;i++)d+=seg(c(s[i-1].id),c(s[i].id));
+    const a=anim&&!calm.matches?" an":"";
+    if(d)h=`<path class="wu${a}" pathLength="1" d="${d}"/><path class="wt${a}" pathLength="1" d="${d}"/>`;
+  }else if(state.mode==="title"){
+    const {prev,next}=neighbours(state.id),me=c(state.id);
+    Object.keys(prev).forEach(id=>h+=`<path class="win" d="${seg(c(id),me)}"/>`);
+    Object.keys(next).forEach(id=>h+=`<path class="wout" d="${seg(me,c(id))}"/>`);
+  }
+  svg.innerHTML=h;
+}
+
+const stills=q=>"https://www.google.com/search?udm=2&q="+encodeURIComponent(q);
+const extA=(q,label)=>`<a class="ext" href="${stills(q)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`;
+function looksHTML(h){
+  const L=LOOKS[h.id];if(!L||!L.length)return "";
+  const pics=L.filter(x=>x.f),rest=L.filter(x=>!x.f);
+  let s=`<h3>Erscheinungen</h3>`;
+  if(pics.length)s+=`<div class="looks">${pics.map(x=>`<figure class="look"><a href="${esc(x.u)}" target="_blank" rel="noopener"><img src="${esc(x.f)}" alt="${esc(x.a?x.a:x.k+": "+x.l)}" loading="lazy"></a><figcaption><b>${esc(x.l)}</b><span>${x.a?(x.v?"Stimme: ":"Darsteller: ")+esc(x.a):esc(x.k)}</span>${extA(x.q,"Filmbilder")}<small>Foto: ${esc(x.c)}, ${esc(x.li)}</small></figcaption></figure>`).join("")}</div>`;
+  if(rest.length)s+=`<ul class="morelooks">${rest.map(x=>`<li>${extA(x.q,x.l)}</li>`).join("")}</ul>`;
+  return s;
+}
+const avatar=h=>{const x=(LOOKS[h.id]||[]).find(x=>x.f);return x?`<img class="av" src="${esc(x.f)}" alt="" loading="lazy">`:"<i></i>"};
+function buildCredits(){
+  const rows=[],seen={};
+  THREADS.forEach(h=>(LOOKS[h.id]||[]).forEach(x=>{if(x.f&&!seen[x.f]){seen[x.f]=1;rows.push(`<li><a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.a||x.l)}</a>: ${esc(x.c)}, ${esc(x.li)}</li>`)}}));
+  $("#credits").innerHTML=`<summary>Bildnachweise (${rows.length} Fotos von Wikimedia Commons)</summary><ul>${rows.join("")}</ul>`;
+}
+
+/* ---------- Auswahl ---------- */
+function paint(){
+  Object.values(chipEl).forEach(c=>{c.classList.remove("on","sel","in","out");const s=c.querySelector(".step");if(s)s.remove()});
+  map.classList.toggle("dim",state.mode!=="none");
+  if(state.mode==="thread"){
+    const h=TH[state.id];app.dataset.k=h.k;
+    h.stops.forEach((s,i)=>{const c=chipEl[s.id];c.classList.add("on");c.insertAdjacentHTML("beforeend",`<span class="step">${i+1}</span>`)});
+  }else if(state.mode==="title"){
+    app.dataset.k="none";
+    const {prev,next}=neighbours(state.id);
+    chipEl[state.id].classList.add("sel");
+    Object.keys(prev).forEach(id=>chipEl[id].classList.add("in"));
+    Object.keys(next).forEach(id=>chipEl[id].classList.add("out"));
+  }else app.dataset.k="none";
+}
+function head(kicker,title){
+  inspHead.innerHTML=`<div><p class="kicker">${esc(kicker)}</p><h2>${esc(title)}</h2></div><button type="button" class="toggle" id="tg" aria-expanded="${!insp.classList.contains("closed")}">Details</button>`;
+}
+const tbtn=id=>`<button type="button" class="tchip" data-title="${id}">${esc(T[id].name)}<small>${esc(T[id].yl)}</small></button>`;
+function renderInspector(){
+  if(state.mode==="thread"){
+    const h=TH[state.id];
+    head(`${TYPES[h.type][1]} · ${h.stops.length} Stationen`,h.name);
+    inspBody.innerHTML=`<p>${esc(h.desc)}</p>${looksHTML(h)}<h3>Stationen</h3><ol class="stops">${h.stops.map((s,i)=>`<li><span class="num">${i+1}</span><div class="what">${tbtn(s.id)}${s.note?`<span>${esc(s.note)}</span>`:""}</div></li>`).join("")}</ol>`;
+  }else if(state.mode==="title"){
+    const t=T[state.id],L=LANES.find(l=>l.id===t.lane),th=byTitle[t.id]||[];
+    head([L.n,t.tag,t.yl,t.soon?"angekündigt":""].filter(Boolean).join(" · "),t.name);
+    const sec=k=>{const g=th.filter(x=>x.h.type===k);return g.length?`<h3>${TYPES[k][0]}</h3><ul class="tl">${g.map(x=>`<li data-k="${x.h.k}"><button type="button" class="tlink" data-thread="${x.h.id}"><i></i><b>${esc(x.h.name)}</b></button>${x.note?`<span>${esc(x.note)}</span>`:""}</li>`).join("")}</ul>`:""};
+    const {prev,next}=neighbours(t.id);
+    // Je gemeinsamem Faden: was er im anderen und was er in diesem Titel bedeutet, in zeitlicher Reihenfolge.
+    const line=(tid,note)=>`<span><b>${esc(T[tid].sn)}:</b> ${note?esc(note):"kommt hier vor."}</span>`;
+    const via=(id,x,before)=>`<li data-k="${x.h.k}"><button type="button" class="tlink" data-thread="${x.h.id}"><i></i><b>${esc(x.h.name)}</b></button>${before?line(id,x.there)+line(t.id,x.here):line(t.id,x.here)+line(id,x.there)}</li>`;
+    const nb=(m,label,cls,hint,before)=>{const ids=Object.keys(m).sort((a,b)=>T[a].d-T[b].d);return ids.length?`<h3 class="${cls}"><i></i>${label}</h3><p class="de">${hint}</p><ul class="nb">${ids.map(id=>`<li>${tbtn(id)}<ul class="via">${m[id].map(x=>via(id,x,before)).join("")}</ul></li>`).join("")}</ul>`:""};
+    inspBody.innerHTML=`<p>${esc(t.plot)}</p>${t.de?`<p class="de">Deutscher Titel: ${esc(t.de)}</p>`:""}`+
+      (th.length?sec("c")+sec("v")+sec("a")+sec("p")+nb(prev,"Davor im selben Faden","hin","Wo diese Fäden zuletzt aufgetaucht sind. Ein Klick auf den Faden zeigt seinen ganzen Weg.",true)+nb(next,"Danach im selben Faden","hout","Wo diese Fäden als Nächstes wieder auftauchen. Das ist nicht immer eine direkte Fortsetzung der Handlung.",false):`<p class="de">Dieser Titel steht weitgehend für sich und hängt an keinem der Fäden.</p>`);
+  }else{
+    const f=TITLES.filter(t=>t.lane==="F"||t.lane==="Y"&&t.tag!=="Serie"||t.lane==="X").length;
+    head("Übersicht","Alles auf einen Blick");
+    inspBody.innerHTML=`<p>${TITLES.length} Titel und ${THREADS.length} Fäden. Wähle oben einen Faden oder klicke einen Titel auf der Karte an.</p><h3>Zum Einstieg</h3><div class="sugg">${["space","multi","peter","bridge","doom"].map(id=>`<button type="button" class="tbtn" data-k="${TH[id].k}" data-thread="${id}"><i></i>${esc(TH[id].name)}</button>`).join("")}</div>`;
+  }
+  inspBody.scrollTop=0;
+}
+function renderPicker(){
+  tabsEl.innerHTML=Object.keys(TYPES).map(k=>`<button type="button" role="tab" aria-selected="${k===tab}" data-tab="${k}">${TYPES[k][0]}</button>`).join("");
+  tlist.innerHTML=THREADS.filter(h=>h.type===tab).map(h=>`<button type="button" class="tbtn${state.mode==="thread"&&state.id===h.id?" act":""}" data-k="${h.k}" data-thread="${h.id}">${avatar(h)}${esc(h.name)}<small>${h.stops.length}</small></button>`).join("");
+}
+function select(mode,id,opt={}){
+  state={mode,id};
+  if(mode==="thread")tab=TH[id].type;
+  if(mode==="title"&&!wide.matches)insp.classList.remove("closed");
+  paint();renderPicker();renderInspector();draw(true);
+  if(mode==="none")return;
+  const el=mode==="title"?chipEl[id]:chipEl[TH[id].stops[0].id];
+  if(opt.reveal)el.scrollIntoView({block:opt.block||"nearest",inline:"center",behavior:calm.matches?"auto":"smooth"});
+  else hreveal(el,true);
+}
+
+// Karte nur waagerecht verschieben, wenn die Station außerhalb des sichtbaren Bereichs liegt
+function hreveal(el,smooth){
+  const ms=$("#mapscroll"),a=ms.getBoundingClientRect(),r=el.getBoundingClientRect(),lab=map.querySelector(".lane").offsetWidth+12;
+  if(r.left>=a.left+lab&&r.right<=a.right-8)return;
+  ms.scrollTo({left:ms.scrollLeft+r.left-a.left-lab-24,behavior:smooth&&!calm.matches?"smooth":"auto"});
+}
+/* ---------- Infinity-Steine ---------- */
+function buildStones(){
+  const ks=["space","mind","reality","power","time","soul"],cols=[];
+  ks.forEach(k=>TH[k].stops.forEach(s=>{if(!cols.includes(s.id))cols.push(s.id)}));
+  cols.sort((a,b)=>T[a].d-T[b].d);
+  const short={cap1:"The First Avenger",cap2:"The Winter Soldier",cap3:"Civil War",av1:"The Avengers",av2:"Age of Ultron",thor2:"The Dark World",thor3:"Thor: Ragnarok",gotg1:"Guardians of the Galaxy",iw:"Infinity War",eg:"Endgame",loki1:"Loki"};
+  let h=`<thead><tr><th></th>${cols.map(id=>`<th scope="col"><span>${esc(short[id]||T[id].name)}</span><small>${String(Math.floor(T[id].d)).slice(2)}</small></th>`).join("")}</tr></thead><tbody>`;
+  ks.forEach(k=>{
+    const th=TH[k],idx=th.stops.map(s=>cols.indexOf(s.id)),a=Math.min(...idx),b=Math.max(...idx),[n1,n2]=th.name.split(" · ");
+    h+=`<tr data-k="${k}"><th scope="row"><button type="button" class="sbtn" data-thread="${k}" data-reveal="1"><i class="gem"></i><span><b>${esc(n1)}</b><small>${esc(n2)}</small></span></button></th>`;
+    cols.forEach((id,i)=>{
+      const s=th.stops.find(x=>x.id===id),cls=i<a||i>b||a===b?"":i===a?"f":i===b?"l":"m";
+      h+=`<td class="${cls}"${s?` title="${esc(s.note)}"`:""}>${s?`<i class="gem" role="img" aria-label="${esc(n1)} in ${esc(T[id].name)}"></i>`:""}</td>`;
+    });
+    h+="</tr>";
+  });
+  $("#stones").innerHTML=h+"</tbody>";
+}
+
+/* ---------- Ereignisse ---------- */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.id==="tg"||(!wide.matches&&b.closest("#inspHead")&&b.id==="tg")){insp.classList.toggle("closed");b.setAttribute("aria-expanded",!insp.classList.contains("closed"));return}
+  if(b.dataset.tab){tab=b.dataset.tab;renderPicker();return}
+  if(b.id==="clear"){q.value="";search();select("none",null);return}
+  if(b.dataset.thread){select("thread",b.dataset.thread,{reveal:!!b.dataset.reveal||!!b.closest("#insp"),block:b.dataset.reveal?"center":"nearest"});return}
+  if(b.dataset.title){select("title",b.dataset.title,{reveal:!!b.closest("#insp")});return}
+});
+function search(){
+  const v=q.value.trim().toLowerCase();
+  map.classList.toggle("searching",!!v);
+  Object.entries(chipEl).forEach(([id,c])=>{const hit=v&&(T[id].name.toLowerCase().includes(v)||(T[id].de||"").toLowerCase().includes(v));c.classList.toggle("hit",!!hit);c.classList.toggle("miss",!!v&&!hit)});
+}
+q.addEventListener("input",search);
+q.addEventListener("keydown",e=>{if(e.key==="Enter"){const hit=map.querySelector(".chip.hit");if(hit){select("title",hit.dataset.title,{reveal:true});q.value="";search()}}});
+
+buildStones();buildCredits();
+paint();renderPicker();renderInspector();draw(false);
+hreveal(chipEl[TH[state.id].stops[0].id],false);
+new ResizeObserver(()=>draw(false)).observe(map);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>draw(false));
+</script>
+
+</body>
+</html>
